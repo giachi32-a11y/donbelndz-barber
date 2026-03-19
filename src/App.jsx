@@ -211,7 +211,7 @@ export default function App() {
                 Per informazioni o disdire un appuntamento clicca qua:
               </p>
               <button 
-                onClick={() => window.open(`https://wa.me/393447875378?text=${encodeURIComponent("Ciao Donblenz, avrei bisogno di un'informazione o dovrei disdire un appuntamento.")}`)}
+                onClick={() => window.open(`https://wa.me/393447875378?text=${encodeURIComponent("Ciao Danilo, avrei bisogno di un'informazione o dovrei disdire un appuntamento.")}`)}
                 style={styles.contactBtn}
               >
                 SCRIVI SU WHATSAPP
