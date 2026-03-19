@@ -119,7 +119,7 @@ export default function App() {
             <div style={styles.infoCard}>
               <h3 style={{color: THEME.gold, fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px'}}>CONTATTI</h3>
               <p style={{fontSize: '0.85rem', color: '#ccc', margin: 0, lineHeight: '1.4'}}>Per informazioni o disdire un appuntamento clicca qua:</p>
-              <button onClick={() => window.open(`https://wa.me/393447875378?text=${encodeURIComponent("Ciao Danilo, avrei bisogno di un'informazione.")}`)} style={styles.contactBtn}>SCRIVI SU WHATSAPP</button>
+              <button onClick={() => window.open(`https://wa.me/393447875378?text=${encodeURIComponent("Ciao Danilo, avrei bisogno di un'informazione o disdire un appuntamento.")}`)} style={styles.contactBtn}>SCRIVI SU WHATSAPP</button>
             </div>
           </div>
         } />
