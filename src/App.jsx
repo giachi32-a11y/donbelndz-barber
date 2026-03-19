@@ -9,8 +9,8 @@ const THEME = {
   radius: '16px'
 };
 
-// URL del tuo script Google
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAKCHMbtAuFICRwJ4eijB1r6gnvYxq6BORDbRARhjpag32dvHusUayux87X0b7naq26Q/exec";
+// URL del tuo script Google AGGIORNATO
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmF50KHhNGGAD97gfiIDfgM6XXv_M4KxQywHLiFt-uink3a28tmZuyV2Sqq9G-ocoRoA/exec";
 
 const styles = {
   container: { 
@@ -155,6 +155,7 @@ export default function App() {
   const [telefono, setTelefono] = useState('');
   const [loading, setLoading] = useState(false);
   const [chiuso, setChiuso] = useState(false);
+  const [occupati, setOccupati] = useState([]); // NUOVO: Memorizza orari presi
   const [showInstall, setShowInstall] = useState(false);
 
   useEffect(() => {
@@ -172,11 +173,29 @@ export default function App() {
     }
   };
 
+  // NUOVO: Controlla gli orari sul calendario
+  const checkOccupati = async (data) => {
+    setLoading(true);
+    try {
+      const resp = await fetch(`${SCRIPT_URL}?date=${data}`);
+      const dataOccupati = await resp.json();
+      setOccupati(Array.isArray(dataOccupati) ? dataOccupati : []);
+    } catch (e) {
+      console.error("Errore fetch occupati");
+      setOccupati([]);
+    }
+    setLoading(false);
+  };
+
   const handleDateChange = (val) => {
     setDataSel(val);
     setOraSel('');
     const d = new Date(val).getDay();
-    setChiuso(d === 0 || d === 1); 
+    const isChiuso = d === 0 || d === 1;
+    setChiuso(isChiuso);
+    if (!isChiuso && val) {
+      checkOccupati(val); // Chiama il controllo ogni volta che cambia data
+    }
   };
 
   const inviaPrenotazione = async () => {
@@ -286,20 +305,36 @@ export default function App() {
             <h2 style={{fontSize:'1.6rem', marginBottom:'20px'}}>Scegli data e ora</h2>
             <input type="date" onChange={(e) => handleDateChange(e.target.value)} style={styles.dateInput} />
             
+            {loading && <p style={{marginTop: '15px', color: THEME.gold}}>Controllo disponibilità...</p>}
+
             {dataSel && chiuso && (
               <div style={{color:'#FF453A', marginTop:'30px', fontWeight:'700', background:'rgba(255,69,58,0.1)', padding:'15px', borderRadius:'12px', width:'100%'}}>
                 Siamo chiusi. Scegli un altro giorno.
               </div>
             )}
 
-            {dataSel && !chiuso && (
+            {dataSel && !chiuso && !loading && (
               <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', width:'100%', marginTop:'30px'}}>
-                {getTimes().map(t => (
-                  <button key={t} onClick={() => setOraSel(t)} 
-                          style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)', color: oraSel === t ? '#000' : '#fff', fontWeight:'700'}}>
-                    {t}
-                  </button>
-                ))}
+                {getTimes().map(t => {
+                  const isBusy = occupati.includes(t);
+                  return (
+                    <button 
+                      key={t} 
+                      disabled={isBusy}
+                      onClick={() => setOraSel(t)} 
+                      style={{
+                        padding:'14px 0', 
+                        borderRadius:'12px', 
+                        border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', 
+                        background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), 
+                        color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), 
+                        fontWeight:'700',
+                        textDecoration: isBusy ? 'line-through' : 'none'
+                      }}>
+                      {isBusy ? "Pieno" : t}
+                    </button>
+                  );
+                })}
               </div>
             )}
 
