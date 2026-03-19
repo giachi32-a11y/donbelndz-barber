@@ -208,7 +208,7 @@ export default function App() {
             <div style={styles.infoCard}>
               <h3 style={{color: THEME.gold, fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px'}}>CONTATTI</h3>
               <p style={{fontSize: '0.85rem', color: '#ccc', margin: 0, lineHeight: '1.4'}}>
-                Per informazioni o cancellazione appuntamenti clicca qua:
+                Per informazioni o disdire un appuntamento clicca qua:
               </p>
               <button 
                 onClick={() => window.open(`https://wa.me/393447875378?text=${encodeURIComponent("Ciao Donblenz, avrei bisogno di un'informazione o dovrei disdire un appuntamento.")}`)}
