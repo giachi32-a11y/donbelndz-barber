@@ -9,7 +9,8 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmF50KHhNGGAD97gfiIDfgM6XXv_M4KxQywHLiFt-uink3a28tmZuyV2Sqq9G-ocoRoA/exec";
+// NUOVO URL AGGIORNATO
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0WVG4u8HQkzO25B46jo4XCxZkUbfTanIi0dgitQUylKSqzw_em5aV9HV55HfOuSQvhw/exec";
 
 const styles = {
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
@@ -53,10 +54,12 @@ export default function App() {
     else alert("Clicca i tre puntini in alto a destra e seleziona 'Installa applicazione'.");
   };
 
+  // LOGICA AGGIORNATA: Invia il servizio allo script per il controllo 40 min
   const checkOccupati = async (data) => {
     setLoading(true);
     try {
-      const resp = await fetch(`${SCRIPT_URL}?date=${data}`);
+      const serv = localStorage.getItem('serv') || "";
+      const resp = await fetch(`${SCRIPT_URL}?date=${data}&service=${encodeURIComponent(serv)}`);
       const dataOccupati = await resp.json();
       setOccupati(Array.isArray(dataOccupati) ? dataOccupati : []);
     } catch (e) { setOccupati([]); }
