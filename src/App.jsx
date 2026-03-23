@@ -54,7 +54,6 @@ export default function App() {
     else alert("Clicca i tre puntini in alto a destra e seleziona 'Installa applicazione'.");
   };
 
-  // LOGICA AGGIORNATA: Invia il servizio allo script per il controllo 40 min
   const checkOccupati = async (data) => {
     setLoading(true);
     try {
@@ -82,9 +81,20 @@ export default function App() {
 
   const inviaPrenotazione = async () => {
     if (!nome || !telefono) return alert("Per favore, inserisci nome e telefono.");
+    
+    // --- LOGICA FILTRO NUMERI FASULLI ---
+    const cleanTel = telefono.replace(/\s+/g, ''); // Rimuove spazi
+    const isPhoneValid = /^[3][0-9]{9}$/.test(cleanTel); // Inizia con 3, lungo 10 cifre
+    const isTooSimple = /^(.)\1+$/.test(cleanTel); // Evita numeri come 3333333333
+
+    if (!isPhoneValid || isTooSimple) {
+      return alert("Numero di telefono non valido. Inserisci un cellulare reale di 10 cifre.");
+    }
+    // ------------------------------------
+
     setLoading(true);
     try {
-      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ nome, telefono, servizio: localStorage.getItem('serv'), data: dataSel, ora: oraSel }) });
+      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ nome, telefono: cleanTel, servizio: localStorage.getItem('serv'), data: dataSel, ora: oraSel }) });
       navigate('/conferma-finale');
     } catch (e) { alert("Errore nell'invio. Riprova."); }
     finally { setLoading(false); }
