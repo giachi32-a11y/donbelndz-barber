@@ -88,7 +88,7 @@ export default function App() {
     const isTooSimple = /^(.)\1+$/.test(cleanTel); // Evita numeri come 3333333333
 
     if (!isPhoneValid || isTooSimple) {
-      return alert("Numero di telefono non valido. Inserisci un cellulare reale di 10 cifre.");
+      return alert("Numero di telefono non valido. Inserisci un cellulare reale di 10 cifre, senza prefisso.");
     }
     // ------------------------------------
 
