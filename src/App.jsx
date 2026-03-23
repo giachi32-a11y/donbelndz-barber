@@ -48,6 +48,17 @@ export default function App() {
 
   const todayStr = new Date().toISOString().split('T')[0];
 
+  // FUNZIONE PER I GIORNI ROSSI
+  const isFestivo = (data) => {
+    const festivi = [
+      "-01-01", "-01-06", "-04-25", "-05-01", "-06-02", 
+      "-08-15", "-11-01", "-12-08", "-12-25", "-12-26",
+      "2026-04-06" // Pasquetta 2026
+    ];
+    const monthDay = data.substring(4); 
+    return festivi.includes(monthDay) || festivi.includes(data);
+  };
+
   const handleInstallClick = () => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIOS) alert("PRO TIP: Clicca l'icona 'Condividi' in basso e seleziona 'Aggiungi alla schermata Home'.");
@@ -74,7 +85,8 @@ export default function App() {
     if (selectedDate < todayNoTime) { setIsPast(true); return; }
     setIsPast(false);
     const d = selectedDate.getDay();
-    const isChiuso = d === 0 || d === 1;
+    // Blocca se Domenica (0), Lunedì (1) o Giorno Rosso
+    const isChiuso = d === 0 || d === 1 || isFestivo(val);
     setChiuso(isChiuso);
     if (!isChiuso) checkOccupati(val);
   };
@@ -82,15 +94,13 @@ export default function App() {
   const inviaPrenotazione = async () => {
     if (!nome || !telefono) return alert("Per favore, inserisci nome e telefono.");
     
-    // --- LOGICA FILTRO NUMERI FASULLI ---
-    const cleanTel = telefono.replace(/\s+/g, ''); // Rimuove spazi
-    const isPhoneValid = /^[3][0-9]{9}$/.test(cleanTel); // Inizia con 3, lungo 10 cifre
-    const isTooSimple = /^(.)\1+$/.test(cleanTel); // Evita numeri come 3333333333
+    const cleanTel = telefono.replace(/\s+/g, ''); 
+    const isPhoneValid = /^[3][0-9]{9}$/.test(cleanTel); 
+    const isTooSimple = /^(.)\1+$/.test(cleanTel); 
 
     if (!isPhoneValid || isTooSimple) {
       return alert("Numero di telefono non valido. Inserisci un cellulare reale di 10 cifre, senza prefisso.");
     }
-    // ------------------------------------
 
     setLoading(true);
     try {
