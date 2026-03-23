@@ -48,12 +48,11 @@ export default function App() {
 
   const todayStr = new Date().toISOString().split('T')[0];
 
-  // FUNZIONE PER I GIORNI ROSSI
   const isFestivo = (data) => {
     const festivi = [
       "-01-01", "-01-06", "-04-25", "-05-01", "-06-02", 
       "-08-15", "-11-01", "-12-08", "-12-25", "-12-26",
-      "2026-04-06" // Pasquetta 2026
+      "2026-04-06"
     ];
     const monthDay = data.substring(4); 
     return festivi.includes(monthDay) || festivi.includes(data);
@@ -85,7 +84,6 @@ export default function App() {
     if (selectedDate < todayNoTime) { setIsPast(true); return; }
     setIsPast(false);
     const d = selectedDate.getDay();
-    // Blocca se Domenica (0), Lunedì (1) o Giorno Rosso
     const isChiuso = d === 0 || d === 1 || isFestivo(val);
     setChiuso(isChiuso);
     if (!isChiuso) checkOccupati(val);
@@ -93,7 +91,6 @@ export default function App() {
 
   const inviaPrenotazione = async () => {
     if (!nome || !telefono) return alert("Per favore, inserisci nome e telefono.");
-    
     const cleanTel = telefono.replace(/\s+/g, ''); 
     const isPhoneValid = /^[3][0-9]{9}$/.test(cleanTel); 
     const isTooSimple = /^(.)\1+$/.test(cleanTel); 
@@ -112,6 +109,13 @@ export default function App() {
 
   const getTimes = () => {
     if (!dataSel || chiuso || isPast) return [];
+    
+    // --- LOGICA SPECIALE 31 DICEMBRE (MEZZA GIORNATA) ---
+    if (dataSel.endsWith("-12-31")) {
+      return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00"];
+    }
+    // ----------------------------------------------------
+
     const d = new Date(dataSel).getDay();
     if (d === 6) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
     return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
