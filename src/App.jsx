@@ -10,7 +10,7 @@ const THEME = {
 };
 
 // NUOVO URL AGGIORNATO
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0E22Xz5KVxGrpSOiSzZlyRmRBHp3GDE8uDPCs25_G4DEEvF0PetmN9lJgEoI7LzNtVw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlasm2itwzIorpR715bpnXKwWenpUcWT0QkPk6XGnb9BzfqlbHyL_KndxGu-QwC1ZsDQ/exec";
 
 const styles = {
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
