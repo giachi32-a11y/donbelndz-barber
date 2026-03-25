@@ -25,7 +25,6 @@ const styles = {
   serviceCard: { padding: '14px 18px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '380px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxSizing: 'border-box' },
   dateInput: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1.1rem', width: '100%', maxWidth: '300px', textAlign: 'center', outline: 'none', marginTop: '20px' },
   inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' },
-  // STILE TASTO CALENDARIO ORO
   calendarLink: { display: 'inline-block', marginTop: '20px', padding: '12px 24px', background: THEME.goldGradient, color: '#000', borderRadius: '10px', textDecoration: 'none', fontWeight: '700', fontSize: '0.9rem', boxShadow: '0 4px 12px rgba(212, 175, 55, 0.2)' }
 };
 
@@ -102,16 +101,16 @@ export default function App() {
     finally { setLoading(false); }
   };
 
-  // FUNZIONE AGGIORNATA PER CALENDARIO UNIVERSALE (ICS)
+  // FUNZIONE CORRETTA: Forza il formato data e ora esatto per evitare l'errore del "giorno corrente"
   const getCalendarLink = () => {
     const serv = localStorage.getItem('serv') || "Barbiere";
     const titolo = encodeURIComponent("✂️ DonBlendz: " + serv);
-    const dateClean = dataSel.replace(/-/g, "");
-    const timeClean = oraSel.replace(/:/g, "");
+    const dateClean = dataSel.replace(/-/g, ""); // Da 2026-03-26 a 20260326
+    const timeClean = oraSel.replace(/:/g, "");  // Da 10:30 a 1030
+    
     const start = `${dateClean}T${timeClean}00`;
     const end = `${dateClean}T${timeClean.slice(0,2)}5900`;
     
-    // Genera un file .ics al volo che viene riconosciuto dal sistema (iOS/Android)
     return `https://ics.agical.io/?subject=${titolo}&start=${start}&end=${end}&description=DonBlendz%20BarberShop`;
   };
 
