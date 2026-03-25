@@ -9,7 +9,6 @@ const THEME = {
   radius: '16px'
 };
 
-// NUOVO URL AGGIORNATO
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxL1ZKJGJJPGwrYaOPDQ5CHGwmoFqb_H9zbydEZvGVPmlaTacWoaKXhlOxrVhlF7BMevg/exec";
 
 const styles = {
@@ -101,17 +100,25 @@ export default function App() {
     finally { setLoading(false); }
   };
 
-  // FUNZIONE CORRETTA: Forza il formato data e ora esatto per evitare l'errore del "giorno corrente"
+  // FUNZIONE AGGIORNATA: Utilizza i parametri espliciti per evitare il reset alla data odierna
   const getCalendarLink = () => {
     const serv = localStorage.getItem('serv') || "Barbiere";
     const titolo = encodeURIComponent("✂️ DonBlendz: " + serv);
-    const dateClean = dataSel.replace(/-/g, ""); // Da 2026-03-26 a 20260326
-    const timeClean = oraSel.replace(/:/g, "");  // Da 10:30 a 1030
     
-    const start = `${dateClean}T${timeClean}00`;
-    const end = `${dateClean}T${timeClean.slice(0,2)}5900`;
+    // Assicuriamoci che i pezzi siano corretti: dataSel è YYYY-MM-DD, oraSel è HH:mm
+    const [year, month, day] = dataSel.split('-');
+    const [hour, minute] = oraSel.split(':');
     
-    return `https://ics.agical.io/?subject=${titolo}&start=${start}&end=${end}&description=DonBlendz%20BarberShop`;
+    // Formato richiesto dal generatore: YYYY-MM-DD HH:mm
+    const startStr = `${year}-${month}-${day}%20${hour}:${minute}`;
+    
+    // Calcoliamo la fine (30 minuti dopo)
+    let endHour = parseInt(hour);
+    let endMinute = parseInt(minute) + 30;
+    if (endMinute >= 60) { endHour++; endMinute -= 60; }
+    const endStr = `${year}-${month}-${day}%20${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+
+    return `https://ics.agical.io/?subject=${titolo}&start=${startStr}&end=${endStr}&description=DonBlendz%20BarberShop`;
   };
 
   const getTimes = () => {
@@ -202,7 +209,6 @@ export default function App() {
             <h2 style={{color: THEME.gold, fontSize:'2rem'}}>CONFERMATO!</h2>
             <p>Ciao {nome}, ci vediamo il {dataSel} alle {oraSel}!</p>
             
-            {/* TASTO CALENDARIO ORO AGGIORNATO */}
             <a href={getCalendarLink()} style={styles.calendarLink}>
               AGGIUNGI PROMEMORIA AL MIO CALENDARIO 🗓️
             </a>
