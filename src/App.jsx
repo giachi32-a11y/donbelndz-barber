@@ -24,7 +24,8 @@ const styles = {
   contactBtn: { background: THEME.goldGradient, color: '#000', border: 'none', padding: '10px 15px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: '700', marginTop: '12px', cursor: 'pointer', display: 'inline-block', textDecoration: 'none' },
   serviceCard: { padding: '14px 18px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '380px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxSizing: 'border-box' },
   dateInput: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1.1rem', width: '100%', maxWidth: '300px', textAlign: 'center', outline: 'none', marginTop: '20px' },
-  inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' }
+  inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' },
+  calendarLink: { display: 'inline-block', marginTop: '20px', padding: '12px 24px', backgroundColor: '#4285F4', color: 'white', borderRadius: '10px', textDecoration: 'none', fontWeight: '700', fontSize: '0.9rem' }
 };
 
 export default function App() {
@@ -49,11 +50,7 @@ export default function App() {
   const todayStr = new Date().toISOString().split('T')[0];
 
   const isFestivo = (data) => {
-    const festivi = [
-      "-01-01", "-01-06", "-04-25", "-05-01", "-06-02", 
-      "-08-15", "-11-01", "-12-08", "-12-25", "-12-26",
-      "2026-04-06"
-    ];
+    const festivi = ["-01-01", "-01-06", "-04-25", "-05-01", "-06-02", "-08-15", "-11-01", "-12-08", "-12-25", "-12-26", "2026-04-06"];
     const monthDay = data.substring(4); 
     return festivi.includes(monthDay) || festivi.includes(data);
   };
@@ -94,10 +91,7 @@ export default function App() {
     const cleanTel = telefono.replace(/\s+/g, ''); 
     const isPhoneValid = /^[3][0-9]{9}$/.test(cleanTel); 
     const isTooSimple = /^(.)\1+$/.test(cleanTel); 
-
-    if (!isPhoneValid || isTooSimple) {
-      return alert("Numero di telefono non valido. Inserisci un cellulare reale di 10 cifre, senza prefisso.");
-    }
+    if (!isPhoneValid || isTooSimple) return alert("Numero di telefono non valido.");
 
     setLoading(true);
     try {
@@ -107,15 +101,19 @@ export default function App() {
     finally { setLoading(false); }
   };
 
+  const getGoogleCalendarLink = () => {
+    const serv = localStorage.getItem('serv') || "Barbiere";
+    const dateClean = dataSel.replace(/-/g, "");
+    const timeClean = oraSel.replace(/:/g, "");
+    const start = `${dateClean}T${timeClean}00`;
+    // Imposta fine a +30 minuti approssimativi per il link
+    const end = `${dateClean}T${timeClean.slice(0,2)}5900`;
+    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent("✂️ Appuntamento: " + serv)}&dates=${start}/${end}&details=${encodeURIComponent("Promemoria prenotazione da Don Blendz Barbershop")}&sf=true&output=xml`;
+  };
+
   const getTimes = () => {
     if (!dataSel || chiuso || isPast) return [];
-    
-    // --- LOGICA SPECIALE 31 DICEMBRE (MEZZA GIORNATA) ---
-    if (dataSel.endsWith("-12-31")) {
-      return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00"];
-    }
-    // ----------------------------------------------------
-
+    if (dataSel.endsWith("-12-31")) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00"];
     const d = new Date(dataSel).getDay();
     if (d === 6) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
     return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
@@ -200,6 +198,12 @@ export default function App() {
             <div style={{fontSize:'60px'}}>✅</div>
             <h2 style={{color: THEME.gold, fontSize:'2rem'}}>CONFERMATO!</h2>
             <p>Ciao {nome}, ci vediamo il {dataSel} alle {oraSel}!</p>
+            
+            {/* TASTO AGGIUNGI AL CALENDARIO */}
+            <a href={getGoogleCalendarLink()} target="_blank" rel="noopener noreferrer" style={styles.calendarLink}>
+              AGGIUNGI PROMEMORIA AL MIO CALENDARIO 🗓️
+            </a>
+
             <button onClick={() => { setNome(''); setOraSel(''); navigate('/'); }} style={{...styles.mainButton, marginTop:'40px'}}>TORNA ALLA HOME</button>
           </div>
         } />
