@@ -9,7 +9,7 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPBvJb5Y1uxAmoDRak19_Zv6C8pBWPWB8tR2VmQboLYbQQS_ZjxgYNxoxzue7Uks6yfQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxL1ZKJGJJPGwrYaOPDQ5CHGwmoFqb_H9zbydEZvGVPmlaTacWoaKXhlOxrVhlF7BMevg/exec";
 
 const styles = {
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
@@ -100,25 +100,23 @@ export default function App() {
     finally { setLoading(false); }
   };
 
-  // FUNZIONE AGGIORNATA: Utilizza i parametri espliciti per evitare il reset alla data odierna
+  // FUNZIONE AGGIORNATA: Allineata allo standard ISO e fuso orario di Roma
   const getCalendarLink = () => {
     const serv = localStorage.getItem('serv') || "Barbiere";
     const titolo = encodeURIComponent("✂️ DonBlendz: " + serv);
     
-    // Assicuriamoci che i pezzi siano corretti: dataSel è YYYY-MM-DD, oraSel è HH:mm
-    const [year, month, day] = dataSel.split('-');
-    const [hour, minute] = oraSel.split(':');
-    
-    // Formato richiesto dal generatore: YYYY-MM-DD HH:mm
-    const startStr = `${year}-${month}-${day}%20${hour}:${minute}`;
+    // Formato ISO richiesto: YYYY-MM-DDTHH:mm:ss
+    const startStr = `${dataSel}T${oraSel}:00`;
     
     // Calcoliamo la fine (30 minuti dopo)
+    const [hour, minute] = oraSel.split(':');
     let endHour = parseInt(hour);
     let endMinute = parseInt(minute) + 30;
     if (endMinute >= 60) { endHour++; endMinute -= 60; }
-    const endStr = `${year}-${month}-${day}%20${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+    const endStr = `${dataSel}T${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}:00`;
 
-    return `https://ics.agical.io/?subject=${titolo}&start=${startStr}&end=${endStr}&description=DonBlendz%20BarberShop`;
+    // Aggiungiamo esplicitamente il fuso orario di Roma per evitare slittamenti
+    return `https://ics.agical.io/?subject=${titolo}&start=${startStr}&end=${endStr}&description=DonBlendz%20BarberShop&location=Campi%20Bisenzio&timezone=Europe/Rome`;
   };
 
   const getTimes = () => {
