@@ -23,8 +23,7 @@ const styles = {
   contactBtn: { background: THEME.goldGradient, color: '#000', border: 'none', padding: '10px 15px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: '700', marginTop: '12px', cursor: 'pointer', display: 'inline-block', textDecoration: 'none' },
   serviceCard: { padding: '14px 18px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '380px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxSizing: 'border-box' },
   dateInput: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1.1rem', width: '100%', maxWidth: '300px', textAlign: 'center', outline: 'none', marginTop: '20px' },
-  inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' },
-  calendarLink: { display: 'inline-block', marginTop: '20px', padding: '12px 24px', background: THEME.goldGradient, color: '#000', borderRadius: '10px', textDecoration: 'none', fontWeight: '700', fontSize: '0.9rem', boxShadow: '0 4px 12px rgba(212, 175, 55, 0.2)' }
+  inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' }
 };
 
 export default function App() {
@@ -33,6 +32,7 @@ export default function App() {
   const [dataSel, setDataSel] = useState('');
   const [oraSel, setOraSel] = useState('');
   const [nome, setNome] = useState('');
+  const [email, setEmail] = useState(''); // Stato per Email aggiunto
   const [telefono, setTelefono] = useState('');
   const [loading, setLoading] = useState(false);
   const [chiuso, setChiuso] = useState(false);
@@ -86,37 +86,36 @@ export default function App() {
   };
 
   const inviaPrenotazione = async () => {
-    if (!nome || !telefono) return alert("Per favore, inserisci nome e telefono.");
+    if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
+    
+    // Validazione Email
+    if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
+    
+    // Protezione anti-doppio click
+    if (loading) return; 
+
     const cleanTel = telefono.replace(/\s+/g, ''); 
-    const isPhoneValid = /^[3][0-9]{9}$/.test(cleanTel); 
-    const isTooSimple = /^(.)\1+$/.test(cleanTel); 
-    if (!isPhoneValid || isTooSimple) return alert("Numero di telefono non valido.");
-
     setLoading(true);
+    
     try {
-      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ nome, telefono: cleanTel, servizio: localStorage.getItem('serv'), data: dataSel, ora: oraSel }) });
+      await fetch(SCRIPT_URL, { 
+        method: 'POST', 
+        mode: 'no-cors', 
+        body: JSON.stringify({ 
+          nome, 
+          email, // Invio email allo script
+          telefono: cleanTel, 
+          servizio: localStorage.getItem('serv'), 
+          data: dataSel, 
+          ora: oraSel 
+        }) 
+      });
       navigate('/conferma-finale');
-    } catch (e) { alert("Errore nell'invio. Riprova."); }
-    finally { setLoading(false); }
-  };
-
-  // FUNZIONE AGGIORNATA: Allineata allo standard ISO e fuso orario di Roma
-  const getCalendarLink = () => {
-    const serv = localStorage.getItem('serv') || "Barbiere";
-    const titolo = encodeURIComponent("✂️ DonBlendz: " + serv);
-    
-    // Formato ISO richiesto: YYYY-MM-DDTHH:mm:ss
-    const startStr = `${dataSel}T${oraSel}:00`;
-    
-    // Calcoliamo la fine (30 minuti dopo)
-    const [hour, minute] = oraSel.split(':');
-    let endHour = parseInt(hour);
-    let endMinute = parseInt(minute) + 30;
-    if (endMinute >= 60) { endHour++; endMinute -= 60; }
-    const endStr = `${dataSel}T${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}:00`;
-
-    // Aggiungiamo esplicitamente il fuso orario di Roma per evitare slittamenti
-    return `https://ics.agical.io/?subject=${titolo}&start=${startStr}&end=${endStr}&description=DonBlendz%20BarberShop&location=Campi%20Bisenzio&timezone=Europe/Rome`;
+    } catch (e) { 
+      alert("Errore nell'invio. Riprova."); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   const getTimes = () => {
@@ -196,6 +195,7 @@ export default function App() {
             <button onClick={() => navigate('/prenota')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Indietro</button>
             <h2 style={{fontSize:'1.6rem'}}>I tuoi dati</h2>
             <input type="text" placeholder="Nome e Cognome" value={nome} onChange={(e) => setNome(e.target.value)} style={styles.inputField} />
+            <input type="email" placeholder="La tua Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.inputField} />
             <input type="tel" placeholder="Cellulare" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={styles.inputField} />
             <button disabled={loading} onClick={inviaPrenotazione} style={{...styles.mainButton, marginTop:'40px', width:'100%', opacity: loading ? 0.5 : 1}}>{loading ? "INVIO..." : "CONFERMA PRENOTAZIONE"}</button>
           </div>
@@ -206,12 +206,8 @@ export default function App() {
             <div style={{fontSize:'60px'}}>✅</div>
             <h2 style={{color: THEME.gold, fontSize:'2rem'}}>CONFERMATO!</h2>
             <p>Ciao {nome}, ci vediamo il {dataSel} alle {oraSel}!</p>
-            
-            <a href={getCalendarLink()} style={styles.calendarLink}>
-              AGGIUNGI PROMEMORIA AL MIO CALENDARIO 🗓️
-            </a>
-
-            <button onClick={() => { setNome(''); setOraSel(''); navigate('/'); }} style={{...styles.mainButton, marginTop:'40px'}}>TORNA ALLA HOME</button>
+            <p style={{fontSize:'0.8rem', opacity:0.6, marginTop:'10px'}}>Riceverai un'email di conferma all'indirizzo {email}</p>
+            <button onClick={() => { setNome(''); setOraSel(''); setEmail(''); navigate('/'); }} style={{...styles.mainButton, marginTop:'40px'}}>TORNA ALLA HOME</button>
           </div>
         } />
       </Routes>
