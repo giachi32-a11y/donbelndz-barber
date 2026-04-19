@@ -9,7 +9,7 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUsGtwF2jsRA6DN-V-jeN0h0Mon0sTNxQUNHuCpNChRXM5JIv_Y5Nb_yxOziIyhM6c5A/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUsGtwF2jsRA6DN-V-jeN0h0Mon0sTNxQUNHuCpNChRXM5JIv_Y5Nb_yxOziIyhM6c5A/exec";
 
 const styles = {
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
@@ -163,7 +163,7 @@ export default function App() {
               <p style={{fontSize: '0.9rem', color: '#ccc', margin: 0}}>Via della Colombina N^2 - Campi Bisenzio (FI)</p>
               
               <a 
-                href="https://wa.me/391234567890" 
+                href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}
