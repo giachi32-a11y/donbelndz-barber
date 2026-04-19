@@ -164,7 +164,7 @@ export default function App() {
               
               <hr style={{border: 'none', borderTop: '1px solid #333', margin: '15px 0'}} />
               <h3 style={{color: THEME.gold, fontSize: '0.9rem'}}>DOMANDE? ☝️</h3>
-              <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Clicca qui sotto e scrivici!</p>
+              <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Scrivici su whatsapp!</p>
 
               <a 
                 href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" 
