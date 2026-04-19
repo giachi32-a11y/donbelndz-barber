@@ -162,7 +162,7 @@ export default function App() {
               <h3 style={{color: THEME.gold, fontSize: '0.9rem', letterSpacing: '2px', marginBottom: '10px'}}>LOCATION 📍</h3>
               <p style={{fontSize: '0.9rem', color: '#ccc', margin: 0}}>Via della Colombina N^2 - Campi Bisenzio (FI)</p>
               
-              <hr style={{border: 'none', borderTop: '1px solid #333', margin: '15px 0'}} />
+              <hr style={{border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '15px 0'}} />
               <h3 style={{color: THEME.gold, fontSize: '0.9rem'}}>DOMANDE? ☝️</h3>
               <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Scrivici su whatsapp!</p>
 
