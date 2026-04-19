@@ -9,7 +9,7 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySoQgpmbhFnh2dCSsTzEbcGYMcqEQPIQIXYDfBrAhNFyXmimwrbGoqLMsUGGVrOEQVXA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDwzG8GGAIhN86vPjPu0w4r9IKaGkLm-KU_VTjtKztQmtJ453wH6ZQcYaVo4A2dHvnVA/exec";
 
 const styles = {
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
@@ -19,11 +19,13 @@ const styles = {
   subtitle: { color: '#ffffff', textTransform: 'uppercase', fontSize: '0.8rem', letterSpacing: '4px', fontWeight: '600', marginTop: '5px', opacity: 0.7 },
   installButton: { background: 'transparent', color: THEME.gold, border: `1px solid ${THEME.gold}`, padding: '10px 24px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '700', marginBottom: '15px', cursor: 'pointer' },
   mainButton: { background: THEME.goldGradient, color: '#000', border: 'none', padding: '16px 40px', borderRadius: '14px', fontSize: '1rem', fontWeight: '700', width: '100%', maxWidth: '280px', cursor: 'pointer', textAlign: 'center', boxShadow: '0 8px 16px rgba(212, 175, 55, 0.15)' },
+  secButton: { background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '12px 30px', borderRadius: '14px', fontSize: '0.9rem', fontWeight: '600', width: '100%', maxWidth: '280px', cursor: 'pointer', marginTop: '15px' },
   infoCard: { padding: '22px', background: THEME.glass, borderRadius: THEME.radius, width: '100%', maxWidth: '350px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '20px', textAlign: 'left', boxSizing: 'border-box' },
   contactBtn: { background: THEME.goldGradient, color: '#000', border: 'none', padding: '10px 15px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: '700', marginTop: '12px', cursor: 'pointer', display: 'inline-block', textDecoration: 'none' },
   serviceCard: { padding: '14px 18px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '380px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxSizing: 'border-box' },
   dateInput: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1.1rem', width: '100%', maxWidth: '300px', textAlign: 'center', outline: 'none', marginTop: '20px' },
-  inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' }
+  inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' },
+  apptCard: { padding: '15px', background: THEME.glass, borderRadius: '12px', width: '100%', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '10px', textAlign: 'left' }
 };
 
 export default function App() {
@@ -32,13 +34,17 @@ export default function App() {
   const [dataSel, setDataSel] = useState('');
   const [oraSel, setOraSel] = useState('');
   const [nome, setNome] = useState('');
-  const [email, setEmail] = useState(''); // Stato per Email aggiunto
+  const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [loading, setLoading] = useState(false);
   const [chiuso, setChiuso] = useState(false);
   const [isPast, setIsPast] = useState(false);
   const [occupati, setOccupati] = useState([]);
   const [showInstall, setShowInstall] = useState(false);
+  
+  // Stati per la gestione disdette
+  const [mieiAppuntamenti, setMieiAppuntamenti] = useState([]);
+  const [telRicerca, setTelRicerca] = useState('');
 
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -87,35 +93,41 @@ export default function App() {
 
   const inviaPrenotazione = async () => {
     if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
-    
-    // Validazione Email
     if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
-    
-    // Protezione anti-doppio click
     if (loading) return; 
 
     const cleanTel = telefono.replace(/\s+/g, ''); 
     setLoading(true);
-    
     try {
       await fetch(SCRIPT_URL, { 
         method: 'POST', 
         mode: 'no-cors', 
-        body: JSON.stringify({ 
-          nome, 
-          email, // Invio email allo script
-          telefono: cleanTel, 
-          servizio: localStorage.getItem('serv'), 
-          data: dataSel, 
-          ora: oraSel 
-        }) 
+        body: JSON.stringify({ nome, email, telefono: cleanTel, servizio: localStorage.getItem('serv'), data: dataSel, ora: oraSel }) 
       });
       navigate('/conferma-finale');
-    } catch (e) { 
-      alert("Errore nell'invio. Riprova."); 
-    } finally { 
-      setLoading(false); 
-    }
+    } catch (e) { alert("Errore nell'invio. Riprova."); } finally { setLoading(false); }
+  };
+
+  // --- LOGICA DISDETTE ---
+  const cercaAppuntamenti = async () => {
+    if (!telRicerca) return alert("Inserisci il tuo numero di telefono.");
+    setLoading(true);
+    try {
+      const resp = await fetch(`${SCRIPT_URL}?action=getUserEvents&tel=${encodeURIComponent(telRicerca.replace(/\s+/g, ''))}`);
+      const data = await resp.json();
+      setMieiAppuntamenti(data);
+      if (data.length === 0) alert("Nessun appuntamento trovato per questo numero.");
+    } catch (e) { alert("Errore nella ricerca."); } finally { setLoading(false); }
+  };
+
+  const disdiciAppuntamento = async (id) => {
+    if (!window.confirm("Sei sicuro di voler disdire questo appuntamento?")) return;
+    setLoading(true);
+    try {
+      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'deleteEvent', eventId: id }) });
+      alert("Appuntamento disdetto con successo.");
+      setMieiAppuntamenti(mieiAppuntamenti.filter(a => a.id !== id));
+    } catch (e) { alert("Errore nella cancellazione."); } finally { setLoading(false); }
   };
 
   const getTimes = () => {
@@ -136,6 +148,8 @@ export default function App() {
             <div style={styles.header}><h1 style={styles.brandTitle}>DonBlendz</h1><p style={styles.subtitle}>BarberShop - APP</p></div>
             {showInstall && <button onClick={handleInstallClick} style={styles.installButton}>📲 INSTALLA APP SU HOME</button>}
             <button onClick={() => navigate('/servizi')} style={styles.mainButton}>PRENOTA ORA</button>
+            <button onClick={() => navigate('/miei-appuntamenti')} style={styles.secButton}>I MIEI APPUNTAMENTI</button>
+            
             <div style={styles.infoCard}>
               <h3 style={{color: THEME.gold, fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px'}}>ORARI</h3>
               <p style={{fontSize: '0.9rem', lineHeight: '1.6', margin: 0, color: '#ccc'}}>
@@ -144,14 +158,29 @@ export default function App() {
                 <span style={{color: '#fff'}}>Dom - Lun:</span> Chiuso
               </p>
             </div>
-            <div style={styles.infoCard}>
-              <h3 style={{color: THEME.gold, fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px'}}>LOCATION</h3>
-              <p style={{fontSize: '0.9rem', color: '#ccc', margin: 0}}>📍 via della colombina N^2, Campi Bisenzio (FI)</p>
-            </div>
-            <div style={styles.infoCard}>
-              <h3 style={{color: THEME.gold, fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px'}}>CONTATTI</h3>
-              <p style={{fontSize: '0.85rem', color: '#ccc', margin: 0, lineHeight: '1.4'}}>Per informazioni o disdire un appuntamento clicca qua:</p>
-              <button onClick={() => window.open(`https://wa.me/393447875378?text=${encodeURIComponent("Ciao Danilo, avrei bisogno di un'informazione o disdire un appuntamento.")}`)} style={styles.contactBtn}>SCRIVI SU WHATSAPP</button>
+          </div>
+        } />
+
+        <Route path="/miei-appuntamenti" element={
+          <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Home</button>
+            <h2 style={{fontSize:'1.6rem', marginBottom:'10px'}}>I tuoi appuntamenti</h2>
+            <p style={{fontSize:'0.85rem', opacity:0.7, marginBottom:'20px'}}>Inserisci il tuo numero per gestire le prenotazioni</p>
+            <input type="tel" placeholder="Cellulare" value={telRicerca} onChange={(e) => setTelRicerca(e.target.value)} style={styles.inputField} />
+            <button onClick={cercaAppuntamenti} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "RICERCA..." : "VEDI APPUNTAMENTI"}</button>
+            
+            <div style={{marginTop:'30px', width:'100%'}}>
+              {mieiAppuntamenti.map(a => (
+                <div key={a.id} style={styles.apptCard}>
+                  <div style={{fontWeight:'700', color:THEME.gold}}>{a.title}</div>
+                  <div style={{fontSize:'0.9rem', margin:'5px 0'}}>📅 {new Date(a.start).toLocaleDateString('it-IT')} ore {new Date(a.start).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</div>
+                  {a.canDelete ? (
+                    <button onClick={() => disdiciAppuntamento(a.id)} style={{background:'#FF453A', color:'#fff', border:'none', padding:'8px 15px', borderRadius:'8px', fontSize:'0.75rem', fontWeight:'700', marginTop:'10px', cursor:'pointer'}}>DISDICI</button>
+                  ) : (
+                    <div style={{fontSize:'0.75rem', color:'#FF453A', fontWeight:'600', marginTop:'10px'}}>Disdetta non possibile per oggi. Contattaci su WhatsApp.</div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         } />
