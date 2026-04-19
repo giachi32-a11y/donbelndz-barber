@@ -9,7 +9,7 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDwzG8GGAIhN86vPjPu0w4r9IKaGkLm-KU_VTjtKztQmtJ453wH6ZQcYaVo4A2dHvnVA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzehkLrcnDidmCyhJPyD13t0dZQicB7I1o74aZoc2uB3J7qMNQJ-UxlzDk_dZhlOaXPHg/exec";
 
 const styles = {
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
@@ -55,7 +55,8 @@ export default function App() {
   const todayStr = new Date().toISOString().split('T')[0];
 
   const isFestivo = (data) => {
-    const festivi = ["-01-01", "-01-06", "-04-25", "-05-01", "-06-02", "-08-15", "-11-01", "-12-08", "-12-25", "-12-26", "2026-04-06"];
+    // MODIFICA: Ho rimosso "-05-01" dai festivi per permettere la prenotazione
+    const festivi = ["-01-01", "-01-06", "-04-25", "-06-02", "-08-15", "-11-01", "-12-08", "-12-25", "-12-26", "2026-04-06"];
     const monthDay = data.substring(4); 
     return festivi.includes(monthDay) || festivi.includes(data);
   };
@@ -132,7 +133,13 @@ export default function App() {
 
   const getTimes = () => {
     if (!dataSel || chiuso || isPast) return [];
+    
+    // ORARIO SPECIALE 31 DICEMBRE
     if (dataSel.endsWith("-12-31")) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00"];
+    
+    // MODIFICA: ORARIO SPECIALE 1 MAGGIO (9:00 - 14:00 continuato)
+    if (dataSel.endsWith("-05-01")) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00"];
+
     const d = new Date(dataSel).getDay();
     if (d === 6) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
     return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
