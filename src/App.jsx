@@ -42,6 +42,10 @@ export default function App() {
   const [occupati, setOccupati] = useState([]);
   const [showInstall, setShowInstall] = useState(false);
   
+  // STATI PER TRATTAMENTI SPECIALI WHATSAPP
+  const [servizioExtra, setServizioExtra] = useState(null);
+  const [datiExtra, setDatiExtra] = useState({ nome: '', email: '', tel: '' });
+
   // Stati per la gestione disdette
   const [mieiAppuntamenti, setMieiAppuntamenti] = useState([]);
   const [telRicerca, setTelRicerca] = useState('');
@@ -211,6 +215,71 @@ export default function App() {
                 <span style={{fontWeight: '600'}}>{s.n}</span><span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
               </div>
             ))}
+
+            {/* SEZIONE TRATTAMENTI SPECIALI WHATSAPP */}
+            <div style={{marginTop: '30px', padding: '20px', background: THEME.glass, borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center'}}>
+              <h3 style={{color: THEME.gold, fontSize: '1rem', marginBottom: '15px', textTransform: 'uppercase'}}>Trattamenti / Hairstyling</h3>
+              
+              <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
+                {['Mesh', 'Colorazione'].map(s => (
+                  <button 
+                    key={s}
+                    onClick={() => setServizioExtra(s)}
+                    style={{
+                      flex: 1, padding: '12px', borderRadius: '10px',
+                      border: servizioExtra === s ? `2px solid ${THEME.gold}` : '1px solid #333',
+                      background: servizioExtra === s ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
+                      color: '#fff', fontWeight: 'bold'
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+
+              {servizioExtra && (
+                <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                  <input 
+                    placeholder="Nome e Cognome"
+                    value={datiExtra.nome}
+                    onChange={(e) => setDatiExtra({...datiExtra, nome: e.target.value})}
+                    style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}}
+                  />
+                  <input 
+                    placeholder="Email"
+                    value={datiExtra.email}
+                    onChange={(e) => setDatiExtra({...datiExtra, email: e.target.value})}
+                    style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}}
+                  />
+                  <input 
+                    placeholder="Cellulare"
+                    type="tel"
+                    value={datiExtra.tel}
+                    onChange={(e) => setDatiExtra({...datiExtra, tel: e.target.value})}
+                    style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}}
+                  />
+                  <a 
+                    href={`https://wa.me/393447875378?text=${encodeURIComponent(
+                      `Ciao Danilo, vorrei prenotare il servizio: ${servizioExtra}.\n\n` +
+                      `I MIEI RECAPITI:\n` +
+                      `👤 Nome: ${datiExtra.nome}\n` +
+                      `📧 Email: ${datiExtra.email}\n` +
+                      `📞 Tel: ${datiExtra.tel}\n\n` +
+                      `Attendo la tua conferma per giorno ed orario.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      background: THEME.goldGradient, color: '#000', padding: '15px',
+                      borderRadius: '12px', fontWeight: 'bold', textDecoration: 'none',
+                      marginTop: '10px', fontSize: '0.9rem'
+                    }}
+                  >
+                    PRENOTA SU WHATSAPP 💬
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         } />
 
