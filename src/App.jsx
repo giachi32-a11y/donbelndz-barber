@@ -9,7 +9,7 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUsGtwF2jsRA6DN-V-jeN0h0Mon0sTNxQUNHuCpNChRXM5JIv_Y5Nb_yxOziIyhM6c5A/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUsGtwF2jsRA6DN-V-jeN0h0Mon0sTNxQUNHuCpNChRXM5JIv_Y5Nb_yxOziIyhM6c5A/exec";
 
 const styles = {
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
@@ -55,7 +55,6 @@ export default function App() {
   const todayStr = new Date().toISOString().split('T')[0];
 
   const isFestivo = (data) => {
-    // MODIFICA: Ho rimosso "-05-01" dai festivi per permettere la prenotazione
     const festivi = ["-01-01", "-01-06", "-04-25", "-06-02", "-08-15", "-11-01", "-12-08", "-12-25", "-12-26", "2026-04-06"];
     const monthDay = data.substring(4); 
     return festivi.includes(monthDay) || festivi.includes(data);
@@ -109,7 +108,6 @@ export default function App() {
     } catch (e) { alert("Errore nell'invio. Riprova."); } finally { setLoading(false); }
   };
 
-  // --- LOGICA DISDETTE ---
   const cercaAppuntamenti = async () => {
     if (!telRicerca) return alert("Inserisci il tuo numero di telefono.");
     setLoading(true);
@@ -133,13 +131,8 @@ export default function App() {
 
   const getTimes = () => {
     if (!dataSel || chiuso || isPast) return [];
-    
-    // ORARIO SPECIALE 31 DICEMBRE
     if (dataSel.endsWith("-12-31")) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00"];
-    
-    // MODIFICA: ORARIO SPECIALE 1 MAGGIO (9:00 - 14:00 continuato)
     if (dataSel.endsWith("-05-01")) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00"];
-
     const d = new Date(dataSel).getDay();
     if (d === 6) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
     return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
@@ -164,6 +157,19 @@ export default function App() {
                 <span style={{color: '#fff'}}>Sabato:</span> 09:00 - 17:30 (Continuato)<br/>
                 <span style={{color: '#fff'}}>Dom - Lun:</span> Chiuso
               </p>
+              
+              <hr style={{border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '15px 0'}} />
+              <h3 style={{color: THEME.gold, fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px'}}>POSIZIONE</h3>
+              <p style={{fontSize: '0.9rem', color: '#ccc', margin: 0}}>Via dell'Artigianato, 12, Milano</p>
+              
+              <a 
+                href="https://wa.me/391234567890" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}
+              >
+                💬 CONTATTACI SU WHATSAPP
+              </a>
             </div>
           </div>
         } />
