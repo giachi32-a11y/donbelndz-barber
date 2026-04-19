@@ -172,7 +172,7 @@ export default function App() {
                 rel="noopener noreferrer" 
                 style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}
               >
-                💬 CONTATTACI SU WHATSAPP
+                CONTATTACI SU WHATSAPP 💬
               </a>
             </div>
           </div>
