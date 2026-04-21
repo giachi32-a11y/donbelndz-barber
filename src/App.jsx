@@ -42,13 +42,16 @@ export default function App() {
   const [occupati, setOccupati] = useState([]);
   const [showInstall, setShowInstall] = useState(false);
   
-  // STATI PER TRATTAMENTI SPECIALI WHATSAPP
   const [servizioExtra, setServizioExtra] = useState(null);
   const [datiExtra, setDatiExtra] = useState({ nome: '', email: '', tel: '' });
 
-  // Stati per la gestione disdette
   const [mieiAppuntamenti, setMieiAppuntamenti] = useState([]);
   const [telRicerca, setTelRicerca] = useState('');
+
+  // --- NUOVI STATI PER GESTIONE SICUREZZA DISDETTA ---
+  const [stepDisdetta, setStepDisdetta] = useState('ricerca'); // 'ricerca' o 'codice'
+  const [codiceInserito, setCodiceInserito] = useState('');
+  const [appuntamentoDaCancellare, setAppuntamentoDaCancellare] = useState(null);
 
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -123,14 +126,40 @@ export default function App() {
     } catch (e) { alert("Errore nella ricerca."); } finally { setLoading(false); }
   };
 
-  const disdiciAppuntamento = async (id) => {
-    if (!window.confirm("Sei sicuro di voler disdire questo appuntamento?")) return;
+  // --- IMPLEMENTAZIONE DISDETTA SICURA ---
+  const richiediCodiceDisdetta = async (appt) => {
+    setLoading(true);
+    setAppuntamentoDaCancellare(appt);
+    try {
+      await fetch(SCRIPT_URL, { 
+        method: 'POST', 
+        mode: 'no-cors', 
+        body: JSON.stringify({ action: 'sendOTP', tel: telRicerca.replace(/\s+/g, '') }) 
+      });
+      alert("Abbiamo inviato un codice di conferma alla tua email.");
+      setStepDisdetta('codice');
+    } catch (e) { alert("Errore nell'invio del codice."); } finally { setLoading(false); }
+  };
+
+  const confermaDisdetta = async () => {
+    if (!codiceInserito) return alert("Inserisci il codice ricevuto per email.");
     setLoading(true);
     try {
-      await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'deleteEvent', eventId: id }) });
-      alert("Appuntamento disdetto con successo.");
-      setMieiAppuntamenti(mieiAppuntamenti.filter(a => a.id !== id));
-    } catch (e) { alert("Errore nella cancellazione."); } finally { setLoading(false); }
+      await fetch(SCRIPT_URL, { 
+        method: 'POST', 
+        mode: 'no-cors', 
+        body: JSON.stringify({ 
+          action: 'deleteEventSecure', 
+          eventId: appuntamentoDaCancellare.id, 
+          otp: codiceInserito,
+          tel: telRicerca.replace(/\s+/g, '')
+        }) 
+      });
+      alert("Richiesta inviata. Se il codice è corretto, l'appuntamento verrà rimosso e riceverai una conferma via email.");
+      setMieiAppuntamenti(mieiAppuntamenti.filter(a => a.id !== appuntamentoDaCancellare.id));
+      setStepDisdetta('ricerca');
+      setCodiceInserito('');
+    } catch (e) { alert("Errore durante la cancellazione."); } finally { setLoading(false); }
   };
 
   const getTimes = () => {
@@ -186,23 +215,43 @@ export default function App() {
           <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Home</button>
             <h2 style={{fontSize:'1.6rem', marginBottom:'10px'}}>I tuoi appuntamenti</h2>
-            <p style={{fontSize:'0.85rem', opacity:0.7, marginBottom:'20px'}}>Inserisci il tuo numero per gestire le prenotazioni</p>
-            <input type="tel" placeholder="Cellulare" value={telRicerca} onChange={(e) => setTelRicerca(e.target.value)} style={styles.inputField} />
-            <button onClick={cercaAppuntamenti} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "RICERCA..." : "VEDI APPUNTAMENTI"}</button>
             
-            <div style={{marginTop:'30px', width:'100%'}}>
-              {mieiAppuntamenti.map(a => (
-                <div key={a.id} style={styles.apptCard}>
-                  <div style={{fontWeight:'700', color:THEME.gold}}>{a.title}</div>
-                  <div style={{fontSize:'0.9rem', margin:'5px 0'}}>📅 {new Date(a.start).toLocaleDateString('it-IT')} ore {new Date(a.start).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</div>
-                  {a.canDelete ? (
-                    <button onClick={() => disdiciAppuntamento(a.id)} style={{background:'#FF453A', color:'#fff', border:'none', padding:'8px 15px', borderRadius:'8px', fontSize:'0.75rem', fontWeight:'700', marginTop:'10px', cursor:'pointer'}}>DISDICI</button>
-                  ) : (
-                    <div style={{fontSize:'0.75rem', color:'#FF453A', fontWeight:'600', marginTop:'10px'}}>Disdetta non possibile per oggi. Contattaci su WhatsApp.</div>
-                  )}
+            {stepDisdetta === 'ricerca' ? (
+              <>
+                <p style={{fontSize:'0.85rem', opacity:0.7, marginBottom:'20px'}}>Inserisci il tuo numero per gestire le prenotazioni</p>
+                <input type="tel" placeholder="Cellulare" value={telRicerca} onChange={(e) => setTelRicerca(e.target.value)} style={styles.inputField} />
+                <button onClick={cercaAppuntamenti} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "RICERCA..." : "VEDI APPUNTAMENTI"}</button>
+                
+                <div style={{marginTop:'30px', width:'100%'}}>
+                  {mieiAppuntamenti.map(a => (
+                    <div key={a.id} style={styles.apptCard}>
+                      <div style={{fontWeight:'700', color:THEME.gold}}>{a.title}</div>
+                      <div style={{fontSize:'0.9rem', margin:'5px 0'}}>📅 {new Date(a.start).toLocaleDateString('it-IT')} ore {new Date(a.start).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</div>
+                      {a.canDelete ? (
+                        <button onClick={() => richiediCodiceDisdetta(a)} style={{background:'#FF453A', color:'#fff', border:'none', padding:'8px 15px', borderRadius:'8px', fontSize:'0.75rem', fontWeight:'700', marginTop:'10px', cursor:'pointer'}}>DISDICI</button>
+                      ) : (
+                        <div style={{fontSize:'0.75rem', color:'#FF453A', fontWeight:'600', marginTop:'10px'}}>Disdetta non possibile per oggi. Contattaci su WhatsApp.</div>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <div style={styles.infoCard}>
+                <h3 style={{color: THEME.gold, textAlign: 'center'}}>Verifica Identità</h3>
+                <p style={{fontSize:'0.85rem', textAlign: 'center', color: '#ccc'}}>Inserisci il codice di 6 cifre inviato alla tua email per confermare la cancellazione.</p>
+                <input 
+                  type="text" 
+                  maxLength="6" 
+                  placeholder="000000" 
+                  value={codiceInserito} 
+                  onChange={(e) => setCodiceInserito(e.target.value)} 
+                  style={{...styles.inputField, textAlign: 'center', fontSize: '1.8rem', letterSpacing: '8px', color: THEME.gold}} 
+                />
+                <button onClick={confermaDisdetta} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "VERIFICA..." : "CONFERMA ANNULLAMENTO"}</button>
+                <button onClick={() => { setStepDisdetta('ricerca'); setCodiceInserito(''); }} style={{...styles.secButton, width:'100%', border: 'none'}}>Indietro</button>
+              </div>
+            )}
           </div>
         } />
 
@@ -216,7 +265,6 @@ export default function App() {
               </div>
             ))}
 
-            {/* SEZIONE TRATTAMENTI SPECIALI WHATSAPP */}
             <div style={{marginTop: '30px', padding: '20px', background: THEME.glass, borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center'}}>
               <h3 style={{color: THEME.gold, fontSize: '1rem', marginBottom: '15px', textTransform: 'uppercase'}}>Trattamenti / Hairstyling</h3>
               
