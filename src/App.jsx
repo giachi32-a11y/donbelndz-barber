@@ -48,10 +48,13 @@ export default function App() {
   const [mieiAppuntamenti, setMieiAppuntamenti] = useState([]);
   const [telRicerca, setTelRicerca] = useState('');
 
-  // --- NUOVI STATI PER GESTIONE SICUREZZA DISDETTA ---
-  const [stepDisdetta, setStepDisdetta] = useState('ricerca'); // 'ricerca' o 'codice'
+  // STATI PER DISDETTA SICURA
+  const [stepDisdetta, setStepDisdetta] = useState('ricerca'); 
   const [codiceInserito, setCodiceInserito] = useState('');
   const [appuntamentoDaCancellare, setAppuntamentoDaCancellare] = useState(null);
+
+  // STATI PER LISTA ATTESA
+  const [fasciaOraria, setFasciaOraria] = useState('Qualsiasi orario');
 
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -115,6 +118,29 @@ export default function App() {
     } catch (e) { alert("Errore nell'invio. Riprova."); } finally { setLoading(false); }
   };
 
+  // FUNZIONE PER LISTA ATTESA
+  const inviaListaAttesa = async () => {
+    if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
+    if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
+    
+    setLoading(true);
+    try {
+      await fetch(SCRIPT_URL, { 
+        method: 'POST', 
+        mode: 'no-cors', 
+        body: JSON.stringify({ 
+          action: 'addToWaitingList',
+          nome, 
+          email, 
+          tel: telefono.replace(/\s+/g, ''), 
+          dataScelta: dataSel + " (" + fasciaOraria + ")"
+        }) 
+      });
+      alert("Sei stato inserito in lista d'attesa! Ti contatteremo se si libera un posto.");
+      navigate('/');
+    } catch (e) { alert("Errore nell'invio. Riprova."); } finally { setLoading(false); }
+  };
+
   const cercaAppuntamenti = async () => {
     if (!telRicerca) return alert("Inserisci il tuo numero di telefono.");
     setLoading(true);
@@ -126,7 +152,6 @@ export default function App() {
     } catch (e) { alert("Errore nella ricerca."); } finally { setLoading(false); }
   };
 
-  // --- IMPLEMENTAZIONE DISDETTA SICURA ---
   const richiediCodiceDisdetta = async (appt) => {
     setLoading(true);
     setAppuntamentoDaCancellare(appt);
@@ -173,6 +198,10 @@ export default function App() {
 
   const servizi = [{n: "Combo Taglio + Barba Deluxe", p: "25,00 €"}, {n: "Taglio uomo", p: "17,00 €"}, {n: "Taglio senior", p: "15,00 €"}, {n: "Taglio ragazzo", p: "15,00 €"}, {n: "Taglio bambino", p: "12,00 €"}, {n: "Combo Taglio + Barba", p: "20,00 €"}, {n: "Barba deluxe", p: "10,00 €"}];
 
+  // LOGICA "TUTTO PIENO"
+  const slots = getTimes();
+  const tuttoPieno = slots.length > 0 && slots.every(t => occupati.includes(t));
+
   return (
     <div style={styles.container}>
       <Routes>
@@ -190,23 +219,13 @@ export default function App() {
                 <span style={{color: '#fff'}}>Sabato:</span> 09:00 - 17:30 (Continuato)<br/>
                 <span style={{color: '#fff'}}>Dom - Lun:</span> Chiuso
               </p>
-              
               <hr style={{border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '15px 0'}} />
               <h3 style={{color: THEME.gold, fontSize: '0.9rem', letterSpacing: '2px', marginBottom: '10px'}}>LOCATION 📍</h3>
               <p style={{fontSize: '0.9rem', color: '#ccc', margin: 0}}>Via della Colombina N^2 - Campi Bisenzio (FI)</p>
-              
               <hr style={{border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '15px 0'}} />
               <h3 style={{color: THEME.gold, fontSize: '0.9rem'}}>DOMANDE? ☝️</h3>
               <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Scrivici su whatsapp!</p>
-
-              <a 
-                href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}
-              >
-                CONTATTACI SU WHATSAPP 💬
-              </a>
+              <a href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" target="_blank" rel="noopener noreferrer" style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}>CONTATTACI SU WHATSAPP 💬</a>
             </div>
           </div>
         } />
@@ -215,13 +234,11 @@ export default function App() {
           <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Home</button>
             <h2 style={{fontSize:'1.6rem', marginBottom:'10px'}}>I tuoi appuntamenti</h2>
-            
             {stepDisdetta === 'ricerca' ? (
               <>
                 <p style={{fontSize:'0.85rem', opacity:0.7, marginBottom:'20px'}}>Inserisci il tuo numero per gestire le prenotazioni</p>
                 <input type="tel" placeholder="Cellulare" value={telRicerca} onChange={(e) => setTelRicerca(e.target.value)} style={styles.inputField} />
                 <button onClick={cercaAppuntamenti} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "RICERCA..." : "VEDI APPUNTAMENTI"}</button>
-                
                 <div style={{marginTop:'30px', width:'100%'}}>
                   {mieiAppuntamenti.map(a => (
                     <div key={a.id} style={styles.apptCard}>
@@ -240,14 +257,7 @@ export default function App() {
               <div style={styles.infoCard}>
                 <h3 style={{color: THEME.gold, textAlign: 'center'}}>Verifica Identità</h3>
                 <p style={{fontSize:'0.85rem', textAlign: 'center', color: '#ccc'}}>Inserisci il codice di 6 cifre inviato alla tua email per confermare la cancellazione.</p>
-                <input 
-                  type="text" 
-                  maxLength="6" 
-                  placeholder="000000" 
-                  value={codiceInserito} 
-                  onChange={(e) => setCodiceInserito(e.target.value)} 
-                  style={{...styles.inputField, textAlign: 'center', fontSize: '1.8rem', letterSpacing: '8px', color: THEME.gold}} 
-                />
+                <input type="text" maxLength="6" placeholder="000000" value={codiceInserito} onChange={(e) => setCodiceInserito(e.target.value)} style={{...styles.inputField, textAlign: 'center', fontSize: '1.8rem', letterSpacing: '8px', color: THEME.gold}} />
                 <button onClick={confermaDisdetta} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "VERIFICA..." : "CONFERMA ANNULLAMENTO"}</button>
                 <button onClick={() => { setStepDisdetta('ricerca'); setCodiceInserito(''); }} style={{...styles.secButton, width:'100%', border: 'none'}}>Indietro</button>
               </div>
@@ -264,67 +274,19 @@ export default function App() {
                 <span style={{fontWeight: '600'}}>{s.n}</span><span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
               </div>
             ))}
-
             <div style={{marginTop: '30px', padding: '20px', background: THEME.glass, borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center'}}>
               <h3 style={{color: THEME.gold, fontSize: '1rem', marginBottom: '15px', textTransform: 'uppercase'}}>Trattamenti / Hairstyling</h3>
-              
               <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
                 {['Mesh', 'Colorazione'].map(s => (
-                  <button 
-                    key={s}
-                    onClick={() => setServizioExtra(s)}
-                    style={{
-                      flex: 1, padding: '12px', borderRadius: '10px',
-                      border: servizioExtra === s ? `2px solid ${THEME.gold}` : '1px solid #333',
-                      background: servizioExtra === s ? 'rgba(212, 175, 55, 0.1)' : 'transparent',
-                      color: '#fff', fontWeight: 'bold'
-                    }}
-                  >
-                    {s}
-                  </button>
+                  <button key={s} onClick={() => setServizioExtra(s)} style={{flex: 1, padding: '12px', borderRadius: '10px', border: servizioExtra === s ? `2px solid ${THEME.gold}` : '1px solid #333', background: servizioExtra === s ? 'rgba(212, 175, 55, 0.1)' : 'transparent', color: '#fff', fontWeight: 'bold'}}>{s}</button>
                 ))}
               </div>
-
               {servizioExtra && (
                 <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
-                  <input 
-                    placeholder="Nome e Cognome"
-                    value={datiExtra.nome}
-                    onChange={(e) => setDatiExtra({...datiExtra, nome: e.target.value})}
-                    style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}}
-                  />
-                  <input 
-                    placeholder="Email"
-                    value={datiExtra.email}
-                    onChange={(e) => setDatiExtra({...datiExtra, email: e.target.value})}
-                    style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}}
-                  />
-                  <input 
-                    placeholder="Cellulare"
-                    type="tel"
-                    value={datiExtra.tel}
-                    onChange={(e) => setDatiExtra({...datiExtra, tel: e.target.value})}
-                    style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}}
-                  />
-                  <a 
-                    href={`https://wa.me/393447875378?text=${encodeURIComponent(
-                      `Ciao Danilo, vorrei prenotare il servizio: ${servizioExtra}.\n\n` +
-                      `I MIEI RECAPITI:\n` +
-                      `👤 Nome: ${datiExtra.nome}\n` +
-                      `📧 Email: ${datiExtra.email}\n` +
-                      `📞 Tel: ${datiExtra.tel}\n\n` +
-                      `Attendo la tua conferma per giorno ed orario.`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      background: THEME.goldGradient, color: '#000', padding: '15px',
-                      borderRadius: '12px', fontWeight: 'bold', textDecoration: 'none',
-                      marginTop: '10px', fontSize: '0.9rem'
-                    }}
-                  >
-                    PRENOTA SU WHATSAPP 💬
-                  </a>
+                  <input placeholder="Nome e Cognome" value={datiExtra.nome} onChange={(e) => setDatiExtra({...datiExtra, nome: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
+                  <input placeholder="Email" value={datiExtra.email} onChange={(e) => setDatiExtra({...datiExtra, email: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
+                  <input placeholder="Cellulare" type="tel" value={datiExtra.tel} onChange={(e) => setDatiExtra({...datiExtra, tel: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
+                  <a href={`https://wa.me/393447875378?text=${encodeURIComponent(`Ciao Danilo, vorrei prenotare il servizio: ${servizioExtra}.\n\nI MIEI RECAPITI:\n👤 Nome: ${datiExtra.nome}\n📧 Email: ${datiExtra.email}\n📞 Tel: ${datiExtra.tel}\n\nAttendo la tua conferma per giorno ed orario.`)}`} target="_blank" rel="noopener noreferrer" style={{background: THEME.goldGradient, color: '#000', padding: '15px', borderRadius: '12px', fontWeight: 'bold', textDecoration: 'none', marginTop: '10px', fontSize: '0.9rem'}}>PRENOTA SU WHATSAPP 💬</a>
                 </div>
               )}
             </div>
@@ -339,17 +301,64 @@ export default function App() {
             {loading && <p style={{color: THEME.gold, marginTop: '10px'}}>Controllo agenda...</p>}
             {isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Non puoi prenotare nel passato.</div>}
             {dataSel && chiuso && !isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Siamo chiusi. Scegli un altro giorno.</div>}
+            
             {dataSel && !chiuso && !loading && !isPast && (
-              <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', width:'100%', marginTop:'30px'}}>
-                {getTimes().map(t => {
-                  const isBusy = occupati.includes(t);
-                  return (
-                    <button key={t} disabled={isBusy} onClick={() => setOraSel(t)} style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button>
-                  );
-                })}
-              </div>
+              <>
+                <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', width:'100%', marginTop:'30px'}}>
+                  {getTimes().map(t => {
+                    const isBusy = occupati.includes(t);
+                    return (
+                      <button key={t} disabled={isBusy} onClick={() => setOraSel(t)} style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button>
+                    );
+                  })}
+                </div>
+
+                {/* TASTO LISTA ATTESA - APPARE SOLO SE TUTTO PIENO */}
+                {tuttoPieno && (
+                  <div style={{marginTop: '30px', padding: '20px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '14px', border: `1px solid ${THEME.gold}`, width: '100%', boxSizing: 'border-box'}}>
+                    <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Oggi è tutto esaurito!</p>
+                    <button 
+                      onClick={() => navigate('/lista-attesa')} 
+                      style={{...styles.mainButton, fontSize: '0.85rem', padding: '12px 20px'}}
+                    >
+                      AVVISAMI SE SI LIBERA UN POSTO 🔔
+                    </button>
+                  </div>
+                )}
+              </>
             )}
             {oraSel && <button onClick={() => navigate('/dati-cliente')} style={{...styles.mainButton, marginTop:'40px', width:'100%'}}>CONTINUA</button>}
+          </div>
+        } />
+
+        <Route path="/lista-attesa" element={
+          <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <button onClick={() => navigate('/prenota')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Indietro</button>
+            <h2 style={{fontSize:'1.6rem', color: THEME.gold}}>Lista d'Attesa</h2>
+            <p style={{fontSize: '0.85rem', opacity: 0.7, marginBottom: '20px'}}>Ti contatteremo se si libera un posto per il {dataSel}</p>
+            
+            <input type="text" placeholder="Nome e Cognome" value={nome} onChange={(e) => setNome(e.target.value)} style={styles.inputField} />
+            <input type="email" placeholder="Email (per avviso)" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.inputField} />
+            <input type="tel" placeholder="Cellulare" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={styles.inputField} />
+            
+            <p style={{fontSize: '0.85rem', marginTop: '20px', color: THEME.gold}}>Fascia oraria preferita:</p>
+            <select 
+              value={fasciaOraria} 
+              onChange={(e) => setFasciaOraria(e.target.value)} 
+              style={{...styles.inputField, marginTop: '10px', appearance: 'none'}}
+            >
+              <option value="Qualsiasi orario">Qualsiasi orario</option>
+              <option value="Solo Mattina">Solo Mattina (09:00 - 12:30)</option>
+              <option value="Solo Pomeriggio">Solo Pomeriggio (14:00 - 19:30)</option>
+            </select>
+
+            <button 
+              disabled={loading} 
+              onClick={inviaListaAttesa} 
+              style={{...styles.mainButton, marginTop:'30px', width:'100%', opacity: loading ? 0.5 : 1}}
+            >
+              {loading ? "INVIO..." : "ISCRIVITI ALLA LISTA"}
+            </button>
           </div>
         } />
 
