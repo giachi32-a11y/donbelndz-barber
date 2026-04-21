@@ -9,7 +9,7 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNbo7uPmxrUbNh4bxZzsftBEcUrDJawMRKKdQD_GL9pM32sojejfmZIO5KWuKwXnti9w/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzLw_jPSnx5TsDzySyxES-A_SNL2x_9JXQKvvkqh9z30tiO_hznxKoVO0lHHavP4pu0/exec";
 
 const styles = {
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
