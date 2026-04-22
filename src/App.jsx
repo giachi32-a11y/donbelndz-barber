@@ -356,7 +356,7 @@ export default function App() {
 
                   {tuttoPieno && (
                     <div style={{marginTop: '30px', padding: '20px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '14px', border: `1px solid ${THEME.gold}`, width: '100%', boxSizing: 'border-box'}}>
-                      <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Oggi è tutto esaurito!</p>
+                      <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Posti esauriti!</p>
                       <button 
                         onClick={() => navigate('/lista-attesa')} 
                         style={{...styles.mainButton, fontSize: '0.85rem', padding: '12px 20px'}}
