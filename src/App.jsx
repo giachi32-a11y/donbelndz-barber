@@ -309,7 +309,7 @@ export default function App() {
           <Route path="/servizi" element={
             <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px'}}>
               <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'10px'}}>← Home</button>
-              <h2 style={{textAlign:'center', fontWeight:'700'}}>Scegli il Servizio</h2>
+              <h2 style={{textAlign:'center', fontWeight:'700'}}>Scegli Un Servizio</h2>
               {servizi.map(s => (
                 <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} style={styles.serviceCard}>
                   <span style={{fontWeight: '600'}}>{s.n}</span><span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
