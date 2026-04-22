@@ -12,6 +12,11 @@ const THEME = {
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfJQfR7kfbq6FWTND_ga9Zn8BSyuozhBivam4MtHzQg9yVvKEJ4ol-fvJX9cuaP7jPMQ/exec";
 
 const styles = {
+  // STILI SPLASH SCREEN (AGGIUNTI)
+  splash: { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', zIndex: 9999, transition: 'opacity 0.8s ease' },
+  splashImage: { width: '160px', height: '160px', marginBottom: '20px', animation: 'fadeInScale 1.5s ease', borderRadius: '25px' },
+  loadingText: { color: '#fff', fontSize: '0.7rem', letterSpacing: '5px', marginTop: '10px', opacity: 0.5, animation: 'pulse 2s infinite' },
+  
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
   homeContent: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%', paddingBottom: '40px' },
   header: { textAlign: 'center', marginBottom: '30px' },
@@ -31,6 +36,10 @@ const styles = {
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // STATO SPLASH SCREEN (AGGIUNTO)
+  const [showSplash, setShowSplash] = useState(true);
+
   const [dataSel, setDataSel] = useState('');
   const [oraSel, setOraSel] = useState('');
   const [nome, setNome] = useState('');
@@ -48,13 +57,19 @@ export default function App() {
   const [mieiAppuntamenti, setMieiAppuntamenti] = useState([]);
   const [telRicerca, setTelRicerca] = useState('');
 
-  // STATI PER DISDETTA SICURA
   const [stepDisdetta, setStepDisdetta] = useState('ricerca'); 
   const [codiceInserito, setCodiceInserito] = useState('');
   const [appuntamentoDaCancellare, setAppuntamentoDaCancellare] = useState(null);
 
-  // STATI PER LISTA ATTESA
   const [fasciaOraria, setFasciaOraria] = useState('Qualsiasi orario');
+
+  // TIMER SPLASH SCREEN (AGGIUNTO)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2800);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -118,7 +133,6 @@ export default function App() {
     } catch (e) { alert("Errore nell'invio. Riprova."); } finally { setLoading(false); }
   };
 
-  // FUNZIONE PER LISTA ATTESA
   const inviaListaAttesa = async () => {
     if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
     if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
@@ -198,191 +212,215 @@ export default function App() {
 
   const servizi = [{n: "Combo Taglio + Barba Deluxe", p: "25,00 €"}, {n: "Taglio uomo", p: "17,00 €"}, {n: "Taglio senior", p: "15,00 €"}, {n: "Taglio ragazzo", p: "15,00 €"}, {n: "Taglio bambino", p: "12,00 €"}, {n: "Combo Taglio + Barba", p: "20,00 €"}, {n: "Barba deluxe", p: "10,00 €"}];
 
-  // LOGICA "TUTTO PIENO"
   const slots = getTimes();
   const tuttoPieno = slots.length > 0 && slots.every(t => occupati.includes(t));
 
   return (
-    <div style={styles.container}>
-      <Routes>
-        <Route path="/" element={
-          <div style={styles.homeContent}>
-            <div style={styles.header}><h1 style={styles.brandTitle}>DonBlendz</h1><p style={styles.subtitle}>BarberShop - APP</p></div>
-            {showInstall && <button onClick={handleInstallClick} style={styles.installButton}>📲 INSTALLA APP SU HOME</button>}
-            <button onClick={() => navigate('/servizi')} style={styles.mainButton}>PRENOTA ORA</button>
-            <button onClick={() => navigate('/miei-appuntamenti')} style={styles.secButton}>I MIEI APPUNTAMENTI</button>
-            
-            <div style={styles.infoCard}>
-              <h3 style={{color: THEME.gold, fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px'}}>ORARI NEGOZIO ⌚️</h3>
-              <p style={{fontSize: '0.9rem', lineHeight: '1.6', margin: 0, color: '#ccc'}}>
-                <span style={{color: '#fff'}}>Mar - Ven:</span> 09:00 - 12:30 / 14:00 - 19:30<br/>
-                <span style={{color: '#fff'}}>Sabato:</span> 09:00 - 17:30 (Continuato)<br/>
-                <span style={{color: '#fff'}}>Dom - Lun:</span> Chiuso
-              </p>
-              <hr style={{border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '15px 0'}} />
-              <h3 style={{color: THEME.gold, fontSize: '0.9rem', letterSpacing: '2px', marginBottom: '10px'}}>LOCATION 📍</h3>
-              <p style={{fontSize: '0.9rem', color: '#ccc', margin: 0}}>Via della Colombina N^2 - Campi Bisenzio (FI)</p>
-              <hr style={{border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '15px 0'}} />
-              <h3 style={{color: THEME.gold, fontSize: '0.9rem'}}>DOMANDE? ☝️</h3>
-              <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Scrivici su whatsapp!</p>
-              <a href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" target="_blank" rel="noopener noreferrer" style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}>CONTATTACI SU WHATSAPP 💬</a>
-            </div>
-          </div>
-        } />
+    <>
+      {/* ANIMAZIONI CSS PER LO SPLASH SCREEN */}
+      <style>
+        {`
+          @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+          }
+          @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+          }
+        `}
+      </style>
 
-        <Route path="/miei-appuntamenti" element={
-          <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Home</button>
-            <h2 style={{fontSize:'1.6rem', marginBottom:'10px'}}>I tuoi appuntamenti</h2>
-            {stepDisdetta === 'ricerca' ? (
-              <>
-                <p style={{fontSize:'0.85rem', opacity:0.7, marginBottom:'20px'}}>Inserisci il tuo numero per gestire le prenotazioni</p>
-                <input type="tel" placeholder="Cellulare" value={telRicerca} onChange={(e) => setTelRicerca(e.target.value)} style={styles.inputField} />
-                <button onClick={cercaAppuntamenti} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "RICERCA..." : "VEDI APPUNTAMENTI"}</button>
-                <div style={{marginTop:'30px', width:'100%'}}>
-                  {mieiAppuntamenti.map(a => (
-                    <div key={a.id} style={styles.apptCard}>
-                      <div style={{fontWeight:'700', color:THEME.gold}}>{a.title}</div>
-                      <div style={{fontSize:'0.9rem', margin:'5px 0'}}>📅 {new Date(a.start).toLocaleDateString('it-IT')} ore {new Date(a.start).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</div>
-                      {a.canDelete ? (
-                        <button onClick={() => richiediCodiceDisdetta(a)} style={{background:'#FF453A', color:'#fff', border:'none', padding:'8px 15px', borderRadius:'8px', fontSize:'0.75rem', fontWeight:'700', marginTop:'10px', cursor:'pointer'}}>DISDICI</button>
-                      ) : (
-                        <div style={{fontSize:'0.75rem', color:'#FF453A', fontWeight:'600', marginTop:'10px'}}>Disdetta non possibile per oggi. Contattaci su WhatsApp.</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
+      {/* COMPONENTE SPLASH SCREEN (APPARE SOPRA TUTTO) */}
+      {showSplash && (
+        <div style={styles.splash}>
+          <img src="./logo512.png" alt="Logo" style={styles.splashImage} />
+          <div style={styles.loadingText}>DONBLENDZ</div>
+        </div>
+      )}
+
+      {/* IL TUO CONTAINER ORIGINALE CON AGGIUNTA DI OPACITY PER TRANSIZIONE */}
+      <div style={{...styles.container, opacity: showSplash ? 0 : 1, transition: 'opacity 1s ease'}}>
+        <Routes>
+          <Route path="/" element={
+            <div style={styles.homeContent}>
+              <div style={styles.header}><h1 style={styles.brandTitle}>DonBlendz</h1><p style={styles.subtitle}>BarberShop - APP</p></div>
+              {showInstall && <button onClick={handleInstallClick} style={styles.installButton}>📲 INSTALLA APP SU HOME</button>}
+              <button onClick={() => navigate('/servizi')} style={styles.mainButton}>PRENOTA ORA</button>
+              <button onClick={() => navigate('/miei-appuntamenti')} style={styles.secButton}>I MIEI APPUNTAMENTI</button>
+              
               <div style={styles.infoCard}>
-                <h3 style={{color: THEME.gold, textAlign: 'center'}}>Verifica Identità</h3>
-                <p style={{fontSize:'0.85rem', textAlign: 'center', color: '#ccc'}}>Inserisci il codice di 6 cifre inviato alla tua email per confermare la cancellazione.</p>
-                <input type="text" maxLength="6" placeholder="000000" value={codiceInserito} onChange={(e) => setCodiceInserito(e.target.value)} style={{...styles.inputField, textAlign: 'center', fontSize: '1.8rem', letterSpacing: '8px', color: THEME.gold}} />
-                <button onClick={confermaDisdetta} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "VERIFICA..." : "CONFERMA ANNULLAMENTO"}</button>
-                <button onClick={() => { setStepDisdetta('ricerca'); setCodiceInserito(''); }} style={{...styles.secButton, width:'100%', border: 'none'}}>Indietro</button>
+                <h3 style={{color: THEME.gold, fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px'}}>ORARI NEGOZIO ⌚️</h3>
+                <p style={{fontSize: '0.9rem', lineHeight: '1.6', margin: 0, color: '#ccc'}}>
+                  <span style={{color: '#fff'}}>Mar - Ven:</span> 09:00 - 12:30 / 14:00 - 19:30<br/>
+                  <span style={{color: '#fff'}}>Sabato:</span> 09:00 - 17:30 (Continuato)<br/>
+                  <span style={{color: '#fff'}}>Dom - Lun:</span> Chiuso
+                </p>
+                <hr style={{border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '15px 0'}} />
+                <h3 style={{color: THEME.gold, fontSize: '0.9rem', letterSpacing: '2px', marginBottom: '10px'}}>LOCATION 📍</h3>
+                <p style={{fontSize: '0.9rem', color: '#ccc', margin: 0}}>Via della Colombina N^2 - Campi Bisenzio (FI)</p>
+                <hr style={{border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '15px 0'}} />
+                <h3 style={{color: THEME.gold, fontSize: '0.9rem'}}>DOMANDE? ☝️</h3>
+                <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Scrivici su whatsapp!</p>
+                <a href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" target="_blank" rel="noopener noreferrer" style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}>CONTATTACI SU WHATSAPP 💬</a>
               </div>
-            )}
-          </div>
-        } />
+            </div>
+          } />
 
-        <Route path="/servizi" element={
-          <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px'}}>
-            <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'10px'}}>← Home</button>
-            <h2 style={{textAlign:'center', fontWeight:'700'}}>Scegli Servizio</h2>
-            {servizi.map(s => (
-              <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} style={styles.serviceCard}>
-                <span style={{fontWeight: '600'}}>{s.n}</span><span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
-              </div>
-            ))}
-            <div style={{marginTop: '30px', padding: '20px', background: THEME.glass, borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center'}}>
-              <h3 style={{color: THEME.gold, fontSize: '1rem', marginBottom: '15px', textTransform: 'uppercase'}}>Trattamenti / Hairstyling</h3>
-              <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
-                {['Mesh', 'Colorazione'].map(s => (
-                  <button key={s} onClick={() => setServizioExtra(s)} style={{flex: 1, padding: '12px', borderRadius: '10px', border: servizioExtra === s ? `2px solid ${THEME.gold}` : '1px solid #333', background: servizioExtra === s ? 'rgba(212, 175, 55, 0.1)' : 'transparent', color: '#fff', fontWeight: 'bold'}}>{s}</button>
-                ))}
-              </div>
-              {servizioExtra && (
-                <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
-                  <input placeholder="Nome e Cognome" value={datiExtra.nome} onChange={(e) => setDatiExtra({...datiExtra, nome: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
-                  <input placeholder="Email" value={datiExtra.email} onChange={(e) => setDatiExtra({...datiExtra, email: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
-                  <input placeholder="Cellulare" type="tel" value={datiExtra.tel} onChange={(e) => setDatiExtra({...datiExtra, tel: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
-                  <a href={`https://wa.me/393447875378?text=${encodeURIComponent(`Ciao Danilo, vorrei prenotare il servizio: ${servizioExtra}.\n\nI MIEI RECAPITI:\n👤 Nome: ${datiExtra.nome}\n📧 Email: ${datiExtra.email}\n📞 Tel: ${datiExtra.tel}\n\nAttendo la tua conferma per giorno ed orario.`)}`} target="_blank" rel="noopener noreferrer" style={{background: THEME.goldGradient, color: '#000', padding: '15px', borderRadius: '12px', fontWeight: 'bold', textDecoration: 'none', marginTop: '10px', fontSize: '0.9rem'}}>PRENOTA SU WHATSAPP 💬</a>
+          <Route path="/miei-appuntamenti" element={
+            <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+              <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Home</button>
+              <h2 style={{fontSize:'1.6rem', marginBottom:'10px'}}>I tuoi appuntamenti</h2>
+              {stepDisdetta === 'ricerca' ? (
+                <>
+                  <p style={{fontSize:'0.85rem', opacity:0.7, marginBottom:'20px'}}>Inserisci il tuo numero per gestire le prenotazioni</p>
+                  <input type="tel" placeholder="Cellulare" value={telRicerca} onChange={(e) => setTelRicerca(e.target.value)} style={styles.inputField} />
+                  <button onClick={cercaAppuntamenti} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "RICERCA..." : "VEDI APPUNTAMENTI"}</button>
+                  <div style={{marginTop:'30px', width:'100%'}}>
+                    {mieiAppuntamenti.map(a => (
+                      <div key={a.id} style={styles.apptCard}>
+                        <div style={{fontWeight:'700', color:THEME.gold}}>{a.title}</div>
+                        <div style={{fontSize:'0.9rem', margin:'5px 0'}}>📅 {new Date(a.start).toLocaleDateString('it-IT')} ore {new Date(a.start).toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'})}</div>
+                        {a.canDelete ? (
+                          <button onClick={() => richiediCodiceDisdetta(a)} style={{background:'#FF453A', color:'#fff', border:'none', padding:'8px 15px', borderRadius:'8px', fontSize:'0.75rem', fontWeight:'700', marginTop:'10px', cursor:'pointer'}}>DISDICI</button>
+                        ) : (
+                          <div style={{fontSize:'0.75rem', color:'#FF453A', fontWeight:'600', marginTop:'10px'}}>Disdetta non possibile per oggi. Contattaci su WhatsApp.</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div style={styles.infoCard}>
+                  <h3 style={{color: THEME.gold, textAlign: 'center'}}>Verifica Identità</h3>
+                  <p style={{fontSize:'0.85rem', textAlign: 'center', color: '#ccc'}}>Inserisci il codice di 6 cifre inviato alla tua email per confermare la cancellazione.</p>
+                  <input type="text" maxLength="6" placeholder="000000" value={codiceInserito} onChange={(e) => setCodiceInserito(e.target.value)} style={{...styles.inputField, textAlign: 'center', fontSize: '1.8rem', letterSpacing: '8px', color: THEME.gold}} />
+                  <button onClick={confermaDisdetta} style={{...styles.mainButton, marginTop:'20px', width:'100%'}} disabled={loading}>{loading ? "VERIFICA..." : "CONFERMA ANNULLAMENTO"}</button>
+                  <button onClick={() => { setStepDisdetta('ricerca'); setCodiceInserito(''); }} style={{...styles.secButton, width:'100%', border: 'none'}}>Indietro</button>
                 </div>
               )}
             </div>
-          </div>
-        } />
+          } />
 
-        <Route path="/prenota" element={
-          <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px'}}>
-            <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
-            <h2 style={{fontSize:'1.6rem', marginBottom:'20px'}}>Scegli data e ora</h2>
-            <input type="date" min={todayStr} onChange={(e) => handleDateChange(e.target.value)} style={styles.dateInput} />
-            {loading && <p style={{color: THEME.gold, marginTop: '10px'}}>Controllo agenda...</p>}
-            {isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Non puoi prenotare nel passato.</div>}
-            {dataSel && chiuso && !isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Siamo chiusi. Scegli un altro giorno.</div>}
-            
-            {dataSel && !chiuso && !loading && !isPast && (
-              <>
-                <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', width:'100%', marginTop:'30px'}}>
-                  {getTimes().map(t => {
-                    const isBusy = occupati.includes(t);
-                    return (
-                      <button key={t} disabled={isBusy} onClick={() => setOraSel(t)} style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button>
-                    );
-                  })}
+          <Route path="/servizi" element={
+            <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px'}}>
+              <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'10px'}}>← Home</button>
+              <h2 style={{textAlign:'center', fontWeight:'700'}}>Scegli Servizio</h2>
+              {servizi.map(s => (
+                <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} style={styles.serviceCard}>
+                  <span style={{fontWeight: '600'}}>{s.n}</span><span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
                 </div>
-
-                {/* TASTO LISTA ATTESA - APPARE SOLO SE TUTTO PIENO */}
-                {tuttoPieno && (
-                  <div style={{marginTop: '30px', padding: '20px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '14px', border: `1px solid ${THEME.gold}`, width: '100%', boxSizing: 'border-box'}}>
-                    <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Oggi è tutto esaurito!</p>
-                    <button 
-                      onClick={() => navigate('/lista-attesa')} 
-                      style={{...styles.mainButton, fontSize: '0.85rem', padding: '12px 20px'}}
-                    >
-                      AVVISAMI SE SI LIBERA UN POSTO 🔔
-                    </button>
+              ))}
+              <div style={{marginTop: '30px', padding: '20px', background: THEME.glass, borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center'}}>
+                <h3 style={{color: THEME.gold, fontSize: '1rem', marginBottom: '15px', textTransform: 'uppercase'}}>Trattamenti / Hairstyling</h3>
+                <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
+                  {['Mesh', 'Colorazione'].map(s => (
+                    <button key={s} onClick={() => setServizioExtra(s)} style={{flex: 1, padding: '12px', borderRadius: '10px', border: servizioExtra === s ? `2px solid ${THEME.gold}` : '1px solid #333', background: servizioExtra === s ? 'rgba(212, 175, 55, 0.1)' : 'transparent', color: '#fff', fontWeight: 'bold'}}>{s}</button>
+                  ))}
+                </div>
+                {servizioExtra && (
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                    <input placeholder="Nome e Cognome" value={datiExtra.nome} onChange={(e) => setDatiExtra({...datiExtra, nome: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
+                    <input placeholder="Email" value={datiExtra.email} onChange={(e) => setDatiExtra({...datiExtra, email: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
+                    <input placeholder="Cellulare" type="tel" value={datiExtra.tel} onChange={(e) => setDatiExtra({...datiExtra, tel: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
+                    <a href={`https://wa.me/393447875378?text=${encodeURIComponent(`Ciao Danilo, vorrei prenotare il servizio: ${servizioExtra}.\n\nI MIEI RECAPITI:\n👤 Nome: ${datiExtra.nome}\n📧 Email: ${datiExtra.email}\n📞 Tel: ${datiExtra.tel}\n\nAttendo la tua conferma per giorno ed orario.`)}`} target="_blank" rel="noopener noreferrer" style={{background: THEME.goldGradient, color: '#000', padding: '15px', borderRadius: '12px', fontWeight: 'bold', textDecoration: 'none', marginTop: '10px', fontSize: '0.9rem'}}>PRENOTA SU WHATSAPP 💬</a>
                   </div>
                 )}
-              </>
-            )}
-            {oraSel && <button onClick={() => navigate('/dati-cliente')} style={{...styles.mainButton, marginTop:'40px', width:'100%'}}>CONTINUA</button>}
-          </div>
-        } />
+              </div>
+            </div>
+          } />
 
-        <Route path="/lista-attesa" element={
-          <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <button onClick={() => navigate('/prenota')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Indietro</button>
-            <h2 style={{fontSize:'1.6rem', color: THEME.gold}}>Lista d'Attesa</h2>
-            <p style={{fontSize: '0.85rem', opacity: 0.7, marginBottom: '20px'}}>Ti contatteremo se si libera un posto per il {dataSel}</p>
-            
-            <input type="text" placeholder="Nome e Cognome" value={nome} onChange={(e) => setNome(e.target.value)} style={styles.inputField} />
-            <input type="email" placeholder="Email (per avviso)" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.inputField} />
-            <input type="tel" placeholder="Cellulare" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={styles.inputField} />
-            
-            <p style={{fontSize: '0.85rem', marginTop: '20px', color: THEME.gold}}>Fascia oraria preferita:</p>
-            <select 
-              value={fasciaOraria} 
-              onChange={(e) => setFasciaOraria(e.target.value)} 
-              style={{...styles.inputField, marginTop: '10px', appearance: 'none'}}
-            >
-              <option value="Qualsiasi orario">Qualsiasi orario</option>
-              <option value="Solo Mattina">Solo Mattina (09:00 - 12:30)</option>
-              <option value="Solo Pomeriggio">Solo Pomeriggio (14:00 - 19:30)</option>
-            </select>
+          <Route path="/prenota" element={
+            <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px'}}>
+              <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
+              <h2 style={{fontSize:'1.6rem', marginBottom:'20px'}}>Scegli data e ora</h2>
+              <input type="date" min={todayStr} onChange={(e) => handleDateChange(e.target.value)} style={styles.dateInput} />
+              {loading && <p style={{color: THEME.gold, marginTop: '10px'}}>Controllo agenda...</p>}
+              {isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Non puoi prenotare nel passato.</div>}
+              {dataSel && chiuso && !isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Siamo chiusi. Scegli un altro giorno.</div>}
+              
+              {dataSel && !chiuso && !loading && !isPast && (
+                <>
+                  <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', width:'100%', marginTop:'30px'}}>
+                    {getTimes().map(t => {
+                      const isBusy = occupati.includes(t);
+                      return (
+                        <button key={t} disabled={isBusy} onClick={() => setOraSel(t)} style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button>
+                      );
+                    })}
+                  </div>
 
-            <button 
-              disabled={loading} 
-              onClick={inviaListaAttesa} 
-              style={{...styles.mainButton, marginTop:'30px', width:'100%', opacity: loading ? 0.5 : 1}}
-            >
-              {loading ? "INVIO..." : "ISCRIVITI ALLA LISTA"}
-            </button>
-          </div>
-        } />
+                  {tuttoPieno && (
+                    <div style={{marginTop: '30px', padding: '20px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '14px', border: `1px solid ${THEME.gold}`, width: '100%', boxSizing: 'border-box'}}>
+                      <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Oggi è tutto esaurito!</p>
+                      <button 
+                        onClick={() => navigate('/lista-attesa')} 
+                        style={{...styles.mainButton, fontSize: '0.85rem', padding: '12px 20px'}}
+                      >
+                        AVVISAMI SE SI LIBERA UN POSTO 🔔
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+              {oraSel && <button onClick={() => navigate('/dati-cliente')} style={{...styles.mainButton, marginTop:'40px', width:'100%'}}>CONTINUA</button>}
+            </div>
+          } />
 
-        <Route path="/dati-cliente" element={
-          <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <button onClick={() => navigate('/prenota')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Indietro</button>
-            <h2 style={{fontSize:'1.6rem'}}>I tuoi dati</h2>
-            <input type="text" placeholder="Nome e Cognome" value={nome} onChange={(e) => setNome(e.target.value)} style={styles.inputField} />
-            <input type="email" placeholder="La tua Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.inputField} />
-            <input type="tel" placeholder="Cellulare" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={styles.inputField} />
-            <button disabled={loading} onClick={inviaPrenotazione} style={{...styles.mainButton, marginTop:'40px', width:'100%', opacity: loading ? 0.5 : 1}}>{loading ? "INVIO..." : "CONFERMA PRENOTAZIONE"}</button>
-          </div>
-        } />
+          <Route path="/lista-attesa" element={
+            <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+              <button onClick={() => navigate('/prenota')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Indietro</button>
+              <h2 style={{fontSize:'1.6rem', color: THEME.gold}}>Lista d'Attesa</h2>
+              <p style={{fontSize: '0.85rem', opacity: 0.7, marginBottom: '20px'}}>Ti contatteremo se si libera un posto per il {dataSel}</p>
+              
+              <input type="text" placeholder="Nome e Cognome" value={nome} onChange={(e) => setNome(e.target.value)} style={styles.inputField} />
+              <input type="email" placeholder="Email (per avviso)" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.inputField} />
+              <input type="tel" placeholder="Cellulare" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={styles.inputField} />
+              
+              <p style={{fontSize: '0.85rem', marginTop: '20px', color: THEME.gold}}>Fascia oraria preferita:</p>
+              <select 
+                value={fasciaOraria} 
+                onChange={(e) => setFasciaOraria(e.target.value)} 
+                style={{...styles.inputField, marginTop: '10px', appearance: 'none'}}
+              >
+                <option value="Qualsiasi orario">Qualsiasi orario</option>
+                <option value="Solo Mattina">Solo Mattina (09:00 - 12:30)</option>
+                <option value="Solo Pomeriggio">Solo Pomeriggio (14:00 - 19:30)</option>
+              </select>
 
-        <Route path="/conferma-finale" element={
-          <div style={{textAlign:'center', paddingTop:'80px', display:'flex', flexDirection:'column', alignItems:'center'}}>
-            <div style={{fontSize:'60px'}}>✅</div>
-            <h2 style={{color: THEME.gold, fontSize:'2rem'}}>CONFERMATO!</h2>
-            <p>Ciao {nome}, ci vediamo il {dataSel} alle {oraSel}!</p>
-            <p style={{fontSize:'0.8rem', opacity:0.6, marginTop:'10px'}}>Riceverai un'email di conferma all'indirizzo {email}</p>
-            <button onClick={() => { setNome(''); setOraSel(''); setEmail(''); navigate('/'); }} style={{...styles.mainButton, marginTop:'40px'}}>TORNA ALLA HOME</button>
-          </div>
-        } />
-      </Routes>
-    </div>
+              <button 
+                disabled={loading} 
+                onClick={inviaListaAttesa} 
+                style={{...styles.mainButton, marginTop:'30px', width:'100%', opacity: loading ? 0.5 : 1}}
+              >
+                {loading ? "INVIO..." : "ISCRIVITI ALLA LISTA"}
+              </button>
+            </div>
+          } />
+
+          <Route path="/dati-cliente" element={
+            <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+              <button onClick={() => navigate('/prenota')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Indietro</button>
+              <h2 style={{fontSize:'1.6rem'}}>I tuoi dati</h2>
+              <input type="text" placeholder="Nome e Cognome" value={nome} onChange={(e) => setNome(e.target.value)} style={styles.inputField} />
+              <input type="email" placeholder="La tua Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.inputField} />
+              <input type="tel" placeholder="Cellulare" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={styles.inputField} />
+              <button disabled={loading} onClick={inviaPrenotazione} style={{...styles.mainButton, marginTop:'40px', width:'100%', opacity: loading ? 0.5 : 1}}>{loading ? "INVIO..." : "CONFERMA PRENOTAZIONE"}</button>
+            </div>
+          } />
+
+          <Route path="/conferma-finale" element={
+            <div style={{textAlign:'center', paddingTop:'80px', display:'flex', flexDirection:'column', alignItems:'center'}}>
+              <div style={{fontSize:'60px'}}>✅</div>
+              <h2 style={{color: THEME.gold, fontSize:'2rem'}}>CONFERMATO!</h2>
+              <p>Ciao {nome}, ci vediamo il {dataSel} alle {oraSel}!</p>
+              <p style={{fontSize:'0.8rem', opacity:0.6, marginTop:'10px'}}>Riceverai un'email di conferma all'indirizzo {email}</p>
+              <button onClick={() => { setNome(''); setOraSel(''); setEmail(''); navigate('/'); }} style={{...styles.mainButton, marginTop:'40px'}}>TORNA ALLA HOME</button>
+            </div>
+          } />
+        </Routes>
+      </div>
+    </>
   );
 }
