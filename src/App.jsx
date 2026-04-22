@@ -12,9 +12,9 @@ const THEME = {
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfJQfR7kfbq6FWTND_ga9Zn8BSyuozhBivam4MtHzQg9yVvKEJ4ol-fvJX9cuaP7jPMQ/exec";
 
 const styles = {
-  // STILI SPLASH SCREEN (AGGIUNTI)
+  // STILI SPLASH SCREEN
   splash: { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', zIndex: 9999, transition: 'opacity 0.8s ease' },
-  splashImage: { width: '160px', height: '160px', marginBottom: '20px', animation: 'fadeInScale 1.5s ease', borderRadius: '25px' },
+  splashImage: { width: '160px', height: '160px', marginBottom: '20px', animation: 'fadeInScale 1.5s ease', borderRadius: '25px', objectFit: 'contain' },
   loadingText: { color: '#fff', fontSize: '0.7rem', letterSpacing: '5px', marginTop: '10px', opacity: 0.5, animation: 'pulse 2s infinite' },
   
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
@@ -37,7 +37,6 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // STATO SPLASH SCREEN (AGGIUNTO)
   const [showSplash, setShowSplash] = useState(true);
 
   const [dataSel, setDataSel] = useState('');
@@ -63,7 +62,6 @@ export default function App() {
 
   const [fasciaOraria, setFasciaOraria] = useState('Qualsiasi orario');
 
-  // TIMER SPLASH SCREEN (AGGIUNTO)
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
@@ -217,7 +215,6 @@ export default function App() {
 
   return (
     <>
-      {/* ANIMAZIONI CSS PER LO SPLASH SCREEN */}
       <style>
         {`
           @keyframes fadeInScale {
@@ -232,15 +229,24 @@ export default function App() {
         `}
       </style>
 
-      {/* COMPONENTE SPLASH SCREEN (APPARE SOPRA TUTTO) */}
+      {/* COMPONENTE SPLASH SCREEN CON LOGICA DI CARICAMENTO LOGO MIGLIORATA */}
       {showSplash && (
         <div style={styles.splash}>
-          <img src="./logo512.png" alt="Logo" style={styles.splashImage} />
+          <img 
+            src="logo512.png" 
+            alt="Logo" 
+            style={styles.splashImage} 
+            onError={(e) => {
+              // Prova il percorso assoluto se quello relativo fallisce
+              if (!e.target.src.includes('donbelndz-barber')) {
+                e.target.src = '/donbelndz-barber/logo512.png';
+              }
+            }}
+          />
           <div style={styles.loadingText}>DONBLENDZ</div>
         </div>
       )}
 
-      {/* IL TUO CONTAINER ORIGINALE CON AGGIUNTA DI OPACITY PER TRANSIZIONE */}
       <div style={{...styles.container, opacity: showSplash ? 0 : 1, transition: 'opacity 1s ease'}}>
         <Routes>
           <Route path="/" element={
