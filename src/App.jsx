@@ -9,7 +9,7 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYCmqL-o0NEyh7jmOINZ9V7oF7j2EeL9KBlftmszVnB4TUG145Sl3j44UpE_LLjRAQVQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEQjvndJRiDY9uOoD1VHSahrDL99_npKMrOkRSdOgivbfNKt1PEuLeUbzM5TyFHh6Oqg/exec";
 
 const styles = {
   // STILI SPLASH SCREEN
