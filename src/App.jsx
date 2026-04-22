@@ -240,7 +240,7 @@ export default function App() {
               e.target.src = "logo512.png";
             }}
           />
-          <div style={styles.loadingText}>DONBLENDZ</div>
+          <div style={styles.loadingText}>LOADING...</div>
         </div>
       )}
 
