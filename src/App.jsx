@@ -229,18 +229,15 @@ export default function App() {
         `}
       </style>
 
-      {/* COMPONENTE SPLASH SCREEN CON LOGICA DI CARICAMENTO LOGO MIGLIORATA */}
+      {/* COMPONENTE SPLASH SCREEN - MODIFICA DEFINITIVA PERCORSO LOGO */}
       {showSplash && (
         <div style={styles.splash}>
           <img 
-            src="logo512.png" 
+            src="https://raw.githubusercontent.com/giachi32-a11y/donbelndz-barber/main/logo512.png" 
             alt="Logo" 
             style={styles.splashImage} 
             onError={(e) => {
-              // Prova il percorso assoluto se quello relativo fallisce
-              if (!e.target.src.includes('donbelndz-barber')) {
-                e.target.src = '/donbelndz-barber/logo512.png';
-              }
+              e.target.src = "logo512.png";
             }}
           />
           <div style={styles.loadingText}>DONBLENDZ</div>
