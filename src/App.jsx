@@ -17,7 +17,10 @@ const styles = {
   splashImage: { width: '160px', height: '160px', marginBottom: '20px', animation: 'fadeInScale 1.5s ease', borderRadius: '25px', objectFit: 'contain' },
   loadingText: { color: '#fff', fontSize: '0.7rem', letterSpacing: '5px', marginTop: '10px', opacity: 0.5, animation: 'pulse 2s infinite' },
   
-  container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
+  container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%', position: 'relative' },
+  // NUOVO TASTO STAFF
+  staffAccessBtn: { position: 'absolute', top: '15px', right: '15px', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.3)', border: '1px solid rgba(255,255,255,0.1)', padding: '5px 10px', borderRadius: '8px', fontSize: '0.65rem', fontWeight: 'bold', cursor: 'pointer', zIndex: 10 },
+  
   homeContent: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%', paddingBottom: '40px' },
   header: { textAlign: 'center', marginBottom: '30px' },
   brandTitle: { fontSize: '3.5rem', fontWeight: '800', margin: '0', letterSpacing: '-2px', color: THEME.gold },
@@ -61,6 +64,13 @@ export default function App() {
   const [appuntamentoDaCancellare, setAppuntamentoDaCancellare] = useState(null);
 
   const [fasciaOraria, setFasciaOraria] = useState('Qualsiasi orario');
+
+  // NUOVI STATI AREA STAFF
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPass, setAdminPass] = useState('');
+  const [allEvents, setAllEvents] = useState([]);
+  const [waitingList, setWaitingList] = useState([]);
+  const [viewStaff, setViewStaff] = useState('agenda');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -208,6 +218,45 @@ export default function App() {
     return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
   };
 
+  // FUNZIONI STAFF
+  const handleAdminLogin = async () => {
+    setLoading(true);
+    try {
+      const resp = await fetch(`${SCRIPT_URL}?action=adminLogin&pass=${adminPass}`);
+      const res = await resp.json();
+      if (res.success) {
+        setIsAdmin(true);
+        caricaDatiStaff();
+      } else { alert("Password errata!"); }
+    } catch (e) { alert("Errore login"); } finally { setLoading(false); }
+  };
+
+  const caricaDatiStaff = async () => {
+    setLoading(true);
+    try {
+      const [evResp, waitResp] = await Promise.all([
+        fetch(`${SCRIPT_URL}?action=getAllEvents&pass=${adminPass}`),
+        fetch(`${SCRIPT_URL}?action=getWaitingList&pass=${adminPass}`)
+      ]);
+      setAllEvents(await evResp.json());
+      setWaitingList(await waitResp.json());
+    } catch (e) { console.error("Errore caricamento"); } finally { setLoading(false); }
+  };
+
+  const blockSlot = async (data, ora) => {
+    if (!window.confirm(`Bloccare le ${ora} del ${data}?`)) return;
+    setLoading(true);
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({ action: 'blockSlot', data, ora })
+      });
+      alert("Slot bloccato.");
+      caricaDatiStaff();
+    } catch (e) { alert("Errore blocco"); } finally { setLoading(false); }
+  };
+
   const servizi = [{n: "Combo Taglio + Barba Deluxe", p: "25,00 €"}, {n: "Taglio uomo", p: "17,00 €"}, {n: "Taglio senior", p: "15,00 €"}, {n: "Taglio ragazzo", p: "15,00 €"}, {n: "Taglio bambino", p: "12,00 €"}, {n: "Combo Taglio + Barba", p: "20,00 €"}, {n: "Barba deluxe", p: "10,00 €"}];
 
   const slots = getTimes();
@@ -229,7 +278,7 @@ export default function App() {
         `}
       </style>
 
-      {/* COMPONENTE SPLASH SCREEN - MODIFICA DEFINITIVA PERCORSO LOGO */}
+      {/* COMPONENTE SPLASH SCREEN */}
       {showSplash && (
         <div style={styles.splash}>
           <img 
@@ -245,6 +294,11 @@ export default function App() {
       )}
 
       <div style={{...styles.container, opacity: showSplash ? 0 : 1, transition: 'opacity 1s ease'}}>
+        {/* TASTO STAFF VISIBILE SOLO IN HOME */}
+        {location.pathname === '/' && (
+          <button onClick={() => navigate('/staff-access')} style={styles.staffAccessBtn}>STAFF</button>
+        )}
+
         <Routes>
           <Route path="/" element={
             <div style={styles.homeContent}>
@@ -268,6 +322,57 @@ export default function App() {
                 <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Scrivici su whatsapp!</p>
                 <a href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" target="_blank" rel="noopener noreferrer" style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}>CONTATTA SU WHATSAPP 💬</a>
               </div>
+            </div>
+          } />
+
+          {/* NUOVA ROTTA: AREA STAFF */}
+          <Route path="/staff-access" element={
+            <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '40px'}}>
+              <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom: '20px'}}>← Home</button>
+              <h2 style={{color: THEME.gold}}>Area Staff</h2>
+              {!isAdmin ? (
+                <div style={styles.infoCard}>
+                  <input type="password" placeholder="Password Admin" value={adminPass} onChange={(e) => setAdminPass(e.target.value)} style={styles.inputField} />
+                  <button onClick={handleAdminLogin} style={{...styles.mainButton, marginTop: '20px', width: '100%'}}>{loading ? "ACCESSO..." : "ACCEDI"}</button>
+                </div>
+              ) : (
+                <div>
+                  <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
+                    <button onClick={() => setViewStaff('agenda')} style={{...styles.secButton, flex: 1, borderColor: viewStaff === 'agenda' ? THEME.gold : 'rgba(255,255,255,0.2)', marginTop: 0}}>AGENDA</button>
+                    <button onClick={() => setViewStaff('attesa')} style={{...styles.secButton, flex: 1, borderColor: viewStaff === 'attesa' ? THEME.gold : 'rgba(255,255,255,0.2)', marginTop: 0}}>ATTESA ({waitingList.length})</button>
+                  </div>
+                  {viewStaff === 'agenda' ? (
+                    <div>
+                      {allEvents.slice().reverse().map((ev, i) => (
+                        <div key={i} style={styles.apptCard}>
+                          <div style={{fontWeight: 'bold', color: THEME.gold}}>{ev.title}</div>
+                          <div style={{fontSize: '0.8rem'}}>📅 {new Date(ev.start).toLocaleString('it-IT')}</div>
+                          <div style={{fontSize: '0.8rem', opacity: 0.7}}>✂️ {ev.service}</div>
+                          <div style={{display: 'flex', gap: '20px', marginTop: '10px'}}>
+                            <a href={`tel:${ev.tel}`} style={{textDecoration:'none', fontSize: '1.2rem'}}>📞</a>
+                            <a href={`https://wa.me/${ev.tel.replace(/\+/g,'')}`} style={{textDecoration:'none', fontSize: '1.2rem'}}>💬</a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div>
+                      {waitingList.map((w, i) => (
+                        <div key={i} style={{...styles.apptCard, borderLeft: `4px solid ${THEME.gold}`}}>
+                          <div style={{fontWeight: 'bold'}}>{w.nome}</div>
+                          <div style={{fontSize: '0.8rem'}}>Richiesta: {w.info}</div>
+                          <div style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
+                            <a href={`tel:${w.tel}`} style={{background: '#444', padding: '5px 10px', borderRadius: '5px', textDecoration: 'none', color: '#fff', fontSize: '0.7rem'}}>CHIAMA</a>
+                            <a href={`https://wa.me/${w.tel.replace(/\+/g,'')}?text=Ciao%20${w.nome},%20sono%20Danilo%20di%20DonBlendz...`} style={{background: '#25D366', padding: '5px 10px', borderRadius: '5px', textDecoration: 'none', color: '#fff', fontSize: '0.7rem'}}>WHATSAPP</a>
+                            <button onClick={() => { setDataSel(w.info.split(' ')[0]); navigate('/prenota'); }} style={{background: THEME.gold, border: 'none', padding: '5px 10px', borderRadius: '5px', fontWeight: 'bold', fontSize: '0.7rem'}}>PRENOTA</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <button onClick={() => {setIsAdmin(false); setAdminPass('');}} style={{...styles.secButton, border: 'none', fontSize: '0.7rem'}}>LOGOUT</button>
+                </div>
+              )}
             </div>
           } />
 
@@ -349,7 +454,11 @@ export default function App() {
                     {getTimes().map(t => {
                       const isBusy = occupati.includes(t);
                       return (
-                        <button key={t} disabled={isBusy} onClick={() => setOraSel(t)} style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button>
+                        <div key={t} style={{position:'relative'}}>
+                          <button disabled={isBusy} onClick={() => setOraSel(t)} style={{width:'100%', padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button>
+                          {/* FUNZIONE BLOCCO PER STAFF (SOLO SE ADMIN) */}
+                          {isAdmin && !isBusy && <div onClick={() => blockSlot(dataSel, t)} style={{position:'absolute', top:'-5px', right:'-5px', background:'red', borderRadius:'50%', width:'15px', height:'15px', fontSize:'10px', cursor:'pointer'}}>X</div>}
+                        </div>
                       );
                     })}
                   </div>
