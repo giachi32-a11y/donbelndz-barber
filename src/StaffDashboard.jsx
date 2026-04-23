@@ -98,7 +98,7 @@ export default function StaffDashboard({ onBack }) {
         <div style={{ marginTop: '20px' }}>
           <input 
             type="password" 
-            placeholder="Inserisci Password Danilo" 
+            placeholder="Inserire la Password" 
             value={pass} 
             onChange={(e) => setPass(e.target.value)}
             style={{ width: '100%', maxWidth: '300px', padding: '15px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', fontSize: '1rem', outline: 'none' }}
