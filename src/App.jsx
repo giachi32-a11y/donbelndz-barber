@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import StaffDashboard from './StaffDashboard'; // AGGIUNTO IMPORT
 
 const THEME = {
   gold: '#D4AF37',
@@ -18,7 +19,7 @@ const styles = {
   loadingText: { color: '#fff', fontSize: '0.7rem', letterSpacing: '5px', marginTop: '10px', opacity: 0.5, animation: 'pulse 2s infinite' },
   
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
-  homeContent: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%', paddingBottom: '40px' },
+  homeContent: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%', paddingBottom: '40px', position: 'relative' }, // Aggiunto position relative
   header: { textAlign: 'center', marginBottom: '30px' },
   brandTitle: { fontSize: '3.5rem', fontWeight: '800', margin: '0', letterSpacing: '-2px', color: THEME.gold },
   subtitle: { color: '#ffffff', textTransform: 'uppercase', fontSize: '0.8rem', letterSpacing: '4px', fontWeight: '600', marginTop: '5px', opacity: 0.7 },
@@ -30,7 +31,9 @@ const styles = {
   serviceCard: { padding: '14px 18px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '380px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxSizing: 'border-box' },
   dateInput: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1.1rem', width: '100%', maxWidth: '300px', textAlign: 'center', outline: 'none', marginTop: '20px' },
   inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' },
-  apptCard: { padding: '15px', background: THEME.glass, borderRadius: '12px', width: '100%', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '10px', textAlign: 'left' }
+  apptCard: { padding: '15px', background: THEME.glass, borderRadius: '12px', width: '100%', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '10px', textAlign: 'left' },
+  // NUOVO STILE TASTO STAFF
+  staffBtn: { position: 'absolute', top: '0px', right: '0px', background: 'transparent', color: THEME.gold, border: 'none', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', opacity: 0.5, cursor: 'pointer', padding: '10px' }
 };
 
 export default function App() {
@@ -229,7 +232,6 @@ export default function App() {
         `}
       </style>
 
-      {/* COMPONENTE SPLASH SCREEN - MODIFICA DEFINITIVA PERCORSO LOGO */}
       {showSplash && (
         <div style={styles.splash}>
           <img 
@@ -248,6 +250,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={
             <div style={styles.homeContent}>
+              {/* TASTO STAFF AGGIUNTO QUI */}
+              <button onClick={() => navigate('/staff-access')} style={styles.staffBtn}>AREA STAFF</button>
+              
               <div style={styles.header}><h1 style={styles.brandTitle}>DonBlendz</h1><p style={styles.subtitle}>BarberShop - APP</p></div>
               {showInstall && <button onClick={handleInstallClick} style={styles.installButton}>📲 INSTALLA APP SU HOME</button>}
               <button onClick={() => navigate('/servizi')} style={styles.mainButton}>PRENOTA ORA</button>
@@ -270,6 +275,9 @@ export default function App() {
               </div>
             </div>
           } />
+
+          {/* NUOVA ROTTA STAFF DASHBOARD */}
+          <Route path="/staff-access" element={<StaffDashboard onBack={() => navigate('/')} />} />
 
           <Route path="/miei-appuntamenti" element={
             <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
