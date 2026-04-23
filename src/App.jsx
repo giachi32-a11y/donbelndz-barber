@@ -31,7 +31,18 @@ const styles = {
   serviceCard: { padding: '14px 18px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '380px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxSizing: 'border-box' },
   dateInput: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1.1rem', width: '100%', maxWidth: '300px', textAlign: 'center', outline: 'none', marginTop: '20px' },
   inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' },
-  apptCard: { padding: '15px', background: THEME.glass, borderRadius: '12px', width: '100%', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '10px', textAlign: 'left' },
+  // CORREZIONE APPTCARD: Centrata e allineata al tasto
+  apptCard: { 
+    padding: '15px', 
+    background: THEME.glass, 
+    borderRadius: '12px', 
+    width: '100%', 
+    maxWidth: '300px', 
+    border: '1px solid rgba(255,255,255,0.05)', 
+    margin: '0 auto 10px auto', 
+    textAlign: 'left',
+    boxSizing: 'border-box'
+  },
   // NUOVO STILE TASTO STAFF
   staffBtn: { position: 'absolute', top: '0px', right: '0px', background: 'transparent', color: THEME.gold, border: 'none', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', opacity: 0.5, cursor: 'pointer', padding: '10px' }
 };
