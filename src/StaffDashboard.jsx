@@ -93,7 +93,7 @@ export default function StaffDashboard({ onBack }) {
     return (
       <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: THEME.bg, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', alignSelf: 'center' }}>← Torna all'App</button>
-        <h2 style={{ color: THEME.gold, marginTop: '30px', fontSize: '2rem' }}>Staff Login</h2>
+        <h2 style={{ color: THEME.gold, marginTop: '30px', fontSize: '2rem' }}>STAFF LOGIN</h2>
         <div style={{ marginTop: '20px', width: '100%', maxWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <input 
             type="password" 
