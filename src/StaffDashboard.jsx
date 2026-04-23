@@ -45,11 +45,33 @@ export default function StaffDashboard({ onBack }) {
     setLoading(false);
   };
 
+  // --- NUOVA FUNZIONE: CONFERMA DALLA LISTA ATTESA ---
+  const confermaDaAttesa = async (cliente) => {
+    if (!window.confirm(`Vuoi confermare l'appuntamento per ${cliente.nome}?`)) return;
+    
+    setLoading(true);
+    try {
+      // Nota: lo script dovrà gestire l'azione 'confirmFromWaitingList'
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({ 
+          action: 'confirmFromWaitingList', 
+          cliente: cliente,
+          pass: pass 
+        })
+      });
+      alert("Richiesta inviata! L'appuntamento verrà creato e il cliente rimosso dalla lista.");
+      caricaTuttiIDati(); // Ricarica per vedere i cambiamenti
+    } catch (e) { alert("Errore nella conferma."); }
+    setLoading(false);
+  };
+
   // Aggiungi/Rimuovi Ferie
   const toggleFeria = async (dataScelta) => {
     let nuoveFerie;
     if (data.ferie.includes(dataScelta)) {
-      nuoveFerie = data.ferie.filter(d => d !== dataScelta);
+      nuveFerie = data.ferie.filter(d => d !== dataScelta);
     } else {
       nuoveFerie = [...data.ferie, dataScelta];
     }
@@ -142,9 +164,18 @@ export default function StaffDashboard({ onBack }) {
                 <div key={i} style={{ background: THEME.glass, padding: '15px', borderRadius: THEME.radius, marginBottom: '12px', border: '1px solid #333' }}>
                   <div style={{ fontWeight: 'bold' }}>{w.nome}</div>
                   <div style={{ fontSize: '0.85rem', color: '#ccc' }}>Desidera: {w.info}</div>
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
-                    <a href={`tel:${w.tel}`} style={{ background: '#444', color: '#fff', padding: '8px 12px', borderRadius: '6px', textDecoration: 'none', fontSize: '0.75rem' }}>Chiama</a>
-                    <a href={`https://wa.me/${w.tel.replace(/\D/g,'')}?text=Ciao ${w.nome}, sono Danilo di DonBlendz. Ti scrivo per il posto in lista d'attesa...`} style={{ background: '#25D366', color: '#fff', padding: '8px 12px', borderRadius: '6px', textDecoration: 'none', fontSize: '0.75rem' }}>WhatsApp</a>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <a href={`tel:${w.tel}`} style={{ flex: 1, textAlign: 'center', background: '#444', color: '#fff', padding: '8px', borderRadius: '6px', textDecoration: 'none', fontSize: '0.75rem' }}>📞 Chiama</a>
+                        <a href={`https://wa.me/${w.tel.replace(/\D/g,'')}?text=Ciao ${w.nome}, sono Danilo di DonBlendz. Ti scrivo per il posto in lista d'attesa...`} style={{ flex: 1, textAlign: 'center', background: '#25D366', color: '#fff', padding: '8px', borderRadius: '6px', textDecoration: 'none', fontSize: '0.75rem' }}>💬 WhatsApp</a>
+                    </div>
+                    {/* TASTO DI CONFERMA FINALE */}
+                    <button 
+                        onClick={() => confermaDaAttesa(w)}
+                        style={{ width: '100%', background: THEME.goldGradient, color: '#000', border: 'none', padding: '10px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}
+                    >
+                        ✅ CONFERMA E PRENOTA
+                    </button>
                   </div>
                 </div>
               ))
