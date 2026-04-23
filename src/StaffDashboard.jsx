@@ -173,48 +173,51 @@ export default function StaffDashboard({ onBack }) {
             )}
 
             {view === 'ferie' && (
-              <div style={{ background: THEME.glass, padding: '20px', borderRadius: THEME.radius, border: '1px solid #222' }}>
-                <h3 style={{ color: THEME.gold, marginTop: 0, marginBottom: '20px', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}>BLOCCA CALENDARIO</h3>
+              <div style={{ background: THEME.glass, padding: '24px', borderRadius: THEME.radius, border: '1px solid #222', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+                <h3 style={{ color: THEME.gold, margin: 0, textAlign: 'center', fontSize: '1.3rem', fontWeight: 'bold', width: '100%' }}>BLOCCA CALENDARIO</h3>
                 
-                {/* Inputs ora perfettamente allineati al bottone sotto */}
-                <div style={{ width: '100%', marginBottom: '15px' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '6px' }}>Dal giorno:</label>
+                {/* Gruppi di input puliti: larghezza fissa al 100% per allinearsi al tasto sotto */}
+                <div style={{ width: '100%' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Dal giorno:</label>
                   <input 
                     type="date" 
                     value={feriaForm.dataInizio} 
                     onChange={e => setFeriaForm({...feriaForm, dataInizio: e.target.value})} 
-                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
+                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
                   />
                 </div>
-                <div style={{ width: '100%', marginBottom: '15px' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '6px' }}>Al giorno:</label>
+
+                <div style={{ width: '100%' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Al giorno:</label>
                   <input 
                     type="date" 
                     value={feriaForm.dataFine} 
                     onChange={e => setFeriaForm({...feriaForm, dataFine: e.target.value})} 
-                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
+                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
                   />
                 </div>
-                <div style={{ width: '100%', marginBottom: '15px' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '6px' }}>Dalle ore:</label>
+
+                <div style={{ width: '100%' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Dalle ore:</label>
                   <input 
                     type="time" 
                     value={feriaForm.inizio} 
                     onChange={e => setFeriaForm({...feriaForm, inizio: e.target.value})} 
-                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
+                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
                   />
                 </div>
-                <div style={{ width: '100%', marginBottom: '25px' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '6px' }}>Alle ore:</label>
+
+                <div style={{ width: '100%', marginBottom: '5px' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Alle ore:</label>
                   <input 
                     type="time" 
                     value={feriaForm.fine} 
                     onChange={e => setFeriaForm({...feriaForm, fine: e.target.value})} 
-                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
+                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
                   />
                 </div>
                 
-                <button onClick={salvaFeria} style={{ width: '100%', padding: '15px', background: THEME.goldGradient, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer' }}>
+                <button onClick={salvaFeria} style={{ width: '100%', padding: '16px', background: THEME.goldGradient, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '10px', fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(212, 175, 55, 0.2)' }}>
                   CONFERMA
                 </button>
               </div>
