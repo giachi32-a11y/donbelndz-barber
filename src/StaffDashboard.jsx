@@ -8,7 +8,7 @@ const THEME = {
   glass: 'rgba(255, 255, 255, 0.05)'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbHxlJJvmi0c3uwu5k169767ThHhmk1PP0GAr5gWLXFRcJjUsCyCYzB3DcJMAViXHUbg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNpUSC_J1ZZLhvNvOO-Doam8K-ujdUnn576TvyR9FgdRqo35lEAEBs-2v3qL63NI6ieQ/exec";
 
 export default function StaffDashboard({ onBack }) {
   const [isAdmin, setIsAdmin] = useState(false);
