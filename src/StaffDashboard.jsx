@@ -24,6 +24,13 @@ export default function StaffDashboard({ onBack }) {
     fine: '20:00' 
   });
 
+  // Carica i dati automaticamente quando diventi Admin
+  useEffect(() => {
+    if (isAdmin) {
+      caricaTuttiIDati();
+    }
+  }, [isAdmin]);
+
   const handleLogin = async () => {
     setLoading(true);
     try {
@@ -31,7 +38,6 @@ export default function StaffDashboard({ onBack }) {
       const res = await resp.json();
       if (res.success) {
         setIsAdmin(true);
-        caricaTuttiIDati();
       } else { alert("Password errata!"); }
     } catch (e) { alert("Errore di connessione allo script."); }
     setLoading(false);
@@ -40,15 +46,16 @@ export default function StaffDashboard({ onBack }) {
   const caricaTuttiIDati = async () => {
     setLoading(true);
     try {
-      const [ag, at] = await Promise.all([
-        fetch(`${SCRIPT_URL}?action=getAllEvents`).then(r => r.json()),
-        fetch(`${SCRIPT_URL}?action=getWaitingList`).then(r => r.json())
-      ]);
+      const resp = await fetch(`${SCRIPT_URL}?action=getWaitingList`);
+      const at = await resp.json();
       setData({ 
-        agenda: Array.isArray(ag) ? ag : [], 
+        agenda: [], // Al momento non usata
         attesa: Array.isArray(at) ? at : [] 
       });
-    } catch (e) { console.error("Errore caricamento dati"); }
+    } catch (e) { 
+      console.error("Errore caricamento dati:", e);
+      alert("Errore nel recupero della lista d'attesa.");
+    }
     setLoading(false);
   };
 
@@ -76,7 +83,7 @@ export default function StaffDashboard({ onBack }) {
         body: JSON.stringify({ action: 'removeFromWaitingList', rowId: rowId })
       });
       caricaTuttiIDati();
-    } catch (e) { alert("Errore"); }
+    } catch (e) { alert("Errore durante la rimozione."); }
     setLoading(false);
   };
 
@@ -97,7 +104,7 @@ export default function StaffDashboard({ onBack }) {
       });
       alert("Blocco ferie inserito!");
       setFeriaForm({ dataInizio: '', dataFine: '', inizio: '09:00', fine: '20:00' });
-    } catch (e) { alert("Errore"); }
+    } catch (e) { alert("Errore nel salvataggio ferie."); }
     setLoading(false);
   };
 
@@ -105,15 +112,15 @@ export default function StaffDashboard({ onBack }) {
     return (
       <div style={{ padding: '20px', textAlign: 'center', backgroundColor: THEME.bg, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
         <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', marginBottom: '50px', opacity: 0.8 }}>← Torna all'App</button>
-        <h2 style={{ color: THEME.gold, fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 30px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>STAFF LOGIN</h2>
+        <h2 style={{ color: THEME.gold, fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 30px 0', textTransform: 'uppercase' }}>STAFF LOGIN</h2>
         <input 
           type="password" 
-          placeholder="Inserire la Password" 
+          placeholder="Password" 
           value={pass} 
           onChange={(e) => setPass(e.target.value)}
           style={{ width: '100%', maxWidth: '280px', padding: '16px', borderRadius: '12px', border: '1px solid #333', background: '#111', color: '#fff', textAlign: 'center', fontSize: '1rem', boxSizing: 'border-box', outline: 'none', marginBottom: '20px' }}
         />
-        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '280px', padding: '16px', background: THEME.goldGradient, border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', color: '#000', fontSize: '1rem', textTransform: 'uppercase' }}>
+        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '280px', padding: '16px', background: THEME.goldGradient, border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', color: '#000', fontSize: '1rem' }}>
           {loading ? "ACCESSO..." : "ACCEDI"}
         </button>
       </div>
@@ -124,7 +131,7 @@ export default function StaffDashboard({ onBack }) {
     <div style={{ width: '100%', minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', padding: '20px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '500px', marginBottom: '30px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '450px', marginBottom: '30px' }}>
         <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>ESCI</button>
         <h3 style={{ color: THEME.gold, margin: 0 }}>Admin Danilo</h3>
         <button onClick={caricaTuttiIDati} style={{ background: '#222', border: 'none', color: '#fff', padding: '10px 14px', borderRadius: '10px', cursor: 'pointer' }}>↻</button>
@@ -154,11 +161,7 @@ export default function StaffDashboard({ onBack }) {
           <>
             {view === 'attesa' && (
               data.attesa.length > 0 ? data.attesa.map((w, i) => (
-                <div key={i} style={{ 
-                  background: w.stato === 'CONTATTATO' ? 'rgba(212, 175, 55, 0.1)' : THEME.glass, 
-                  padding: '18px', borderRadius: THEME.radius, marginBottom: '12px', 
-                  border: w.stato === 'CONTATTATO' ? `1px solid ${THEME.gold}` : '1px solid #333' 
-                }}>
+                <div key={i} style={{ background: w.stato === 'CONTATTATO' ? 'rgba(212, 175, 55, 0.1)' : THEME.glass, padding: '18px', borderRadius: THEME.radius, marginBottom: '12px', border: w.stato === 'CONTATTATO' ? `1px solid ${THEME.gold}` : '1px solid #333' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{w.nome}</span>
                     {w.stato === 'CONTATTATO' && <span style={{ color: THEME.gold, fontSize: '0.7rem', fontWeight: 'bold' }}>● CONTATTATO</span>}
@@ -176,50 +179,27 @@ export default function StaffDashboard({ onBack }) {
               <div style={{ background: THEME.glass, padding: '24px', borderRadius: THEME.radius, border: '1px solid #222', boxSizing: 'border-box' }}>
                 <h3 style={{ color: THEME.gold, margin: '0 0 20px 0', textAlign: 'center', fontSize: '1.3rem', fontWeight: 'bold' }}>BLOCCA CALENDARIO</h3>
                 
-                {/* Allineamento matematico perfetto: box-sizing e reset margini */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%' }}>
-                  <div style={{ width: '100%' }}>
-                    <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px', textAlign: 'left' }}>Dal giorno:</label>
-                    <input 
-                      type="date" 
-                      value={feriaForm.dataInizio} 
-                      onChange={e => setFeriaForm({...feriaForm, dataInizio: e.target.value})} 
-                      style={{ width: '100%', margin: '0', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none', display: 'block' }} 
-                    />
-                  </div>
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Dal giorno:</label>
+                  <input type="date" value={feriaForm.dataInizio} onChange={e => setFeriaForm({...feriaForm, dataInizio: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} />
+                </div>
 
-                  <div style={{ width: '100%' }}>
-                    <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px', textAlign: 'left' }}>Al giorno:</label>
-                    <input 
-                      type="date" 
-                      value={feriaForm.dataFine} 
-                      onChange={e => setFeriaForm({...feriaForm, dataFine: e.target.value})} 
-                      style={{ width: '100%', margin: '0', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none', display: 'block' }} 
-                    />
-                  </div>
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Al giorno:</label>
+                  <input type="date" value={feriaForm.dataFine} onChange={e => setFeriaForm({...feriaForm, dataFine: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} />
+                </div>
 
-                  <div style={{ width: '100%' }}>
-                    <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px', textAlign: 'left' }}>Dalle ore:</label>
-                    <input 
-                      type="time" 
-                      value={feriaForm.inizio} 
-                      onChange={e => setFeriaForm({...feriaForm, inizio: e.target.value})} 
-                      style={{ width: '100%', margin: '0', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none', display: 'block' }} 
-                    />
-                  </div>
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Dalle ore:</label>
+                  <input type="time" value={feriaForm.inizio} onChange={e => setFeriaForm({...feriaForm, inizio: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} />
+                </div>
 
-                  <div style={{ width: '100%', marginBottom: '10px' }}>
-                    <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px', textAlign: 'left' }}>Alle ore:</label>
-                    <input 
-                      type="time" 
-                      value={feriaForm.fine} 
-                      onChange={e => setFeriaForm({...feriaForm, fine: e.target.value})} 
-                      style={{ width: '100%', margin: '0', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none', display: 'block' }} 
-                    />
-                  </div>
+                <div style={{ marginBottom: '25px' }}>
+                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Alle ore:</label>
+                  <input type="time" value={feriaForm.fine} onChange={e => setFeriaForm({...feriaForm, fine: e.target.value})} style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} />
                 </div>
                 
-                <button onClick={salvaFeria} style={{ width: '100%', padding: '16px', background: THEME.goldGradient, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '10px', fontSize: '1.1rem', cursor: 'pointer', boxSizing: 'border-box', display: 'block' }}>
+                <button onClick={salvaFeria} style={{ width: '100%', padding: '16px', background: THEME.goldGradient, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '10px', fontSize: '1.1rem', cursor: 'pointer' }}>
                   CONFERMA
                 </button>
               </div>
