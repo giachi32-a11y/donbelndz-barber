@@ -17,7 +17,13 @@ export default function StaffDashboard({ onBack }) {
   const [view, setView] = useState('agenda');
   const [data, setData] = useState({ agenda: [], attesa: [] });
   
-  const [feriaForm, setFeriaForm] = useState({ data: '', inizio: '09:00', fine: '20:00' });
+  // Stato ferie aggiornato con dataFine per intervalli multi-giorno
+  const [feriaForm, setFeriaForm] = useState({ 
+    dataInizio: '', 
+    dataFine: '', 
+    inizio: '09:00', 
+    fine: '20:00' 
+  });
 
   const handleLogin = async () => {
     setLoading(true);
@@ -91,7 +97,7 @@ export default function StaffDashboard({ onBack }) {
   };
 
   const salvaFeria = async () => {
-    if(!feriaForm.data) return alert("Seleziona una data");
+    if(!feriaForm.dataInizio) return alert("Seleziona almeno la data di inizio");
     setLoading(true);
     try {
       await fetch(SCRIPT_URL, {
@@ -99,30 +105,31 @@ export default function StaffDashboard({ onBack }) {
         mode: 'no-cors',
         body: JSON.stringify({ 
           action: 'setFeria', 
-          data: feriaForm.data, 
+          dataInizio: feriaForm.dataInizio,
+          dataFine: feriaForm.dataFine || feriaForm.dataInizio, // Se non mette dataFine, usa la stessa di inizio
           oraInizio: feriaForm.inizio, 
           oraFine: feriaForm.fine 
         })
       });
-      alert("Blocco orario inserito!");
-      setFeriaForm({ data: '', inizio: '09:00', fine: '20:00' });
+      alert("Blocco ferie inserito!");
+      setFeriaForm({ dataInizio: '', dataFine: '', inizio: '09:00', fine: '20:00' });
     } catch (e) { alert("Errore"); }
     setLoading(false);
   };
 
   if (!isAdmin) {
     return (
-      <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: THEME.bg, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
-        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', marginBottom: '40px' }}>← Torna all'App</button>
-        <h2 style={{ color: THEME.gold, fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 30px 0' }}>STAFF LOGIN</h2>
+      <div style={{ padding: '20px', textAlign: 'center', backgroundColor: THEME.bg, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
+        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', marginBottom: '60px' }}>← Torna all'App</button>
+        <h2 style={{ color: THEME.gold, fontSize: '3.5rem', fontWeight: '900', margin: '0 0 40px 0', letterSpacing: '-1px' }}>Staff Login</h2>
         <input 
           type="password" 
-          placeholder="Password" 
+          placeholder="Inserire la Password" 
           value={pass} 
           onChange={(e) => setPass(e.target.value)}
-          style={{ width: '100%', maxWidth: '300px', padding: '18px', borderRadius: '12px', border: '1px solid #333', background: '#111', color: '#fff', textAlign: 'center', fontSize: '1.1rem', boxSizing: 'border-box' }}
+          style={{ width: '100%', maxWidth: '320px', padding: '20px', borderRadius: '15px', border: '1px solid #333', background: '#111', color: '#fff', textAlign: 'center', fontSize: '1.2rem', boxSizing: 'border-box', outline: 'none' }}
         />
-        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '300px', padding: '18px', background: THEME.goldGradient, border: 'none', borderRadius: '12px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer', color: '#000', fontSize: '1.1rem' }}>
+        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '320px', padding: '20px', background: THEME.goldGradient, border: 'none', borderRadius: '15px', marginTop: '25px', fontWeight: 'bold', cursor: 'pointer', color: '#000', fontSize: '1.2rem', textTransform: 'uppercase' }}>
           {loading ? "ACCESSO..." : "ACCEDI"}
         </button>
       </div>
@@ -203,41 +210,53 @@ export default function StaffDashboard({ onBack }) {
 
             {view === 'ferie' && (
               <div style={{ background: THEME.glass, padding: '25px', borderRadius: THEME.radius, border: '1px solid #222' }}>
-                <h3 style={{ color: THEME.gold, marginTop: 0, textAlign: 'center', fontSize: '1.3rem' }}>Blocca Orario</h3>
+                <h3 style={{ color: THEME.gold, marginTop: 0, textAlign: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>BLOCCA CALENDARIO</h3>
                 
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '0.9rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Seleziona Giorno</label>
+                {/* Selezione Multi-Giorno */}
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ fontSize: '0.9rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Dal giorno:</label>
                   <input 
                     type="date" 
-                    value={feriaForm.data} 
-                    onChange={e => setFeriaForm({...feriaForm, data: e.target.value})} 
-                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem' }} 
+                    value={feriaForm.dataInizio} 
+                    onChange={e => setFeriaForm({...feriaForm, dataInizio: e.target.value})} 
+                    style={{ width: '100%', padding: '15px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
+                  />
+                </div>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ fontSize: '0.9rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Al giorno (opzionale):</label>
+                  <input 
+                    type="date" 
+                    value={feriaForm.dataFine} 
+                    onChange={e => setFeriaForm({...feriaForm, dataFine: e.target.value})} 
+                    style={{ width: '100%', padding: '15px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem', outline: 'none' }} 
                   />
                 </div>
                 
-                {/* Orari uno sotto l'altro per evitare bug layout */}
+                <hr style={{ border: '0', borderTop: '1px solid #222', margin: '20px 0' }} />
+
+                {/* Orari uno sotto l'altro ben distanziati */}
                 <div style={{ marginBottom: '15px' }}>
                   <label style={{ fontSize: '0.9rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Dalle ore:</label>
                   <input 
                     type="time" 
                     value={feriaForm.inizio} 
                     onChange={e => setFeriaForm({...feriaForm, inizio: e.target.value})} 
-                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem' }} 
+                    style={{ width: '100%', padding: '15px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1.1rem', outline: 'none' }} 
                   />
                 </div>
-                <div style={{ marginBottom: '25px' }}>
+                <div style={{ marginBottom: '30px' }}>
                   <label style={{ fontSize: '0.9rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Alle ore:</label>
                   <input 
                     type="time" 
                     value={feriaForm.fine} 
                     onChange={e => setFeriaForm({...feriaForm, fine: e.target.value})} 
-                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem' }} 
+                    style={{ width: '100%', padding: '15px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1.1rem', outline: 'none' }} 
                   />
                 </div>
                 
                 <button 
                   onClick={salvaFeria} 
-                  style={{ width: '100%', padding: '18px', background: THEME.goldGradient, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '12px', fontSize: '1.1rem', cursor: 'pointer' }}
+                  style={{ width: '100%', padding: '20px', background: THEME.goldGradient, color: '#000', fontWeight: '900', border: 'none', borderRadius: '12px', fontSize: '1.1rem', cursor: 'pointer', textTransform: 'uppercase' }}
                 >
                   CONFERMA CHIUSURA
                 </button>
