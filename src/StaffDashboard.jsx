@@ -38,8 +38,30 @@ export default function StaffDashboard({ onBack }) {
         mode: 'no-cors',
         body: JSON.stringify({ action: 'markAsContacted', rowId: rowId })
       });
-      caricaDati(); // Ricarica la lista aggiornata
+      // Piccola attesa per permettere allo script di elaborare prima del ricaricamento
+      setTimeout(caricaDati, 500);
     } catch (e) { alert("Errore nell'aggiornamento"); }
+    setLoading(false);
+  };
+
+  const inviaFeria = async () => {
+    if(!feriaForm.dataInizio || !feriaForm.dataFine) return alert("Inserisci le date.");
+    setLoading(true);
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({ 
+          action: 'setFeria', 
+          dataInizio: feriaForm.dataInizio, 
+          dataFine: feriaForm.dataFine, 
+          oraInizio: feriaForm.inizio, 
+          oraFine: feriaForm.fine 
+        })
+      });
+      alert("Blocco calendario inserito con successo!");
+      setFeriaForm({ dataInizio: '', dataFine: '', inizio: '09:00', fine: '20:00' });
+    } catch (e) { alert("Errore nel salvataggio."); }
     setLoading(false);
   };
 
@@ -65,10 +87,11 @@ export default function StaffDashboard({ onBack }) {
     background: '#111',
     color: '#fff',
     fontSize: '1rem',
-    boxSizing: 'border-box',
+    boxSizing: 'border-box', // Risolve l'allineamento
     display: 'block',
-    appearance: 'none',
-    WebkitAppearance: 'none'
+    appearance: 'none',      // Rimuove stili nativi mobile
+    WebkitAppearance: 'none', // Rimuove stili Safari/iOS
+    minHeight: '50px'
   };
 
   if (!isAdmin) {
@@ -77,7 +100,7 @@ export default function StaffDashboard({ onBack }) {
         <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', marginBottom: '40px', cursor: 'pointer' }}>← Torna all'App</button>
         <h2 style={{ color: THEME.gold, fontSize: '2rem', marginBottom: '30px' }}>STAFF LOGIN</h2>
         <input type="password" placeholder="Inserire Password" value={pass} onChange={(e) => setPass(e.target.value)} style={{ ...inputStyle, maxWidth: '300px', textAlign: 'center' }} />
-        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '300px', padding: '16px', background: THEME.goldGradient, border: 'none', borderRadius: '12px', fontWeight: 'bold', color: '#000' }}>ACCEDI</button>
+        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '300px', padding: '166x', background: THEME.goldGradient, border: 'none', borderRadius: '12px', fontWeight: 'bold', color: '#000', height: '55px' }}>ACCEDI</button>
       </div>
     );
   }
@@ -102,10 +125,11 @@ export default function StaffDashboard({ onBack }) {
           data.attesa.length > 0 ? data.attesa.map((w, i) => (
             <div key={i} style={{ background: THEME.glass, padding: '20px', borderRadius: THEME.radius, marginBottom: '15px', border: '1px solid #333' }}>
               <div style={{ fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '5px' }}>{w.nome}</div>
+              <div style={{ color: '#aaa', fontSize: '0.85rem', marginBottom: '5px' }}>📧 {w.email}</div>
               <div style={{ color: THEME.gold, fontSize: '0.9rem', marginBottom: '15px' }}>Richiesta per: {w.giorno}</div>
               <div style={{ display: 'flex', gap: '10px' }}>
-                <a href={`https://wa.me/${w.telefono?.toString().replace(/\D/g,'')}`} style={{ flex: 1, background: '#25D366', color: '#fff', textAlign: 'center', padding: '12px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>WhatsApp</a>
-                <button onClick={() => spuntaContattato(w.rowid)} style={{ flex: 1, background: '#444', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold' }}>Fatto ✓</button>
+                <a href={`https://wa.me/${w.tel?.toString().replace(/\D/g,'')}`} style={{ flex: 1, background: '#25D366', color: '#fff', textAlign: 'center', padding: '12px', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold' }}>WhatsApp</a>
+                <button onClick={() => spuntaContattato(w.rowId)} style={{ flex: 1, background: '#444', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold' }}>Fatto ✓</button>
               </div>
             </div>
           )) : <p style={{ textAlign: 'center', opacity: 0.5 }}>Nessun cliente in lista.</p>
@@ -124,7 +148,7 @@ export default function StaffDashboard({ onBack }) {
             <label style={{ fontSize: '0.8rem', color: '#888', display: 'block', marginBottom: '5px' }}>Alle ore:</label>
             <input type="time" value={feriaForm.fine} onChange={e => setFeriaForm({...feriaForm, fine: e.target.value})} style={inputStyle} />
 
-            <button style={{ width: '100%', padding: '16px', background: THEME.goldGradient, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '10px', fontSize: '1rem', marginTop: '10px' }}>CONFERMA CHIUSURA</button>
+            <button onClick={inviaFeria} style={{ width: '100%', padding: '16px', background: THEME.goldGradient, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '10px', fontSize: '1rem', marginTop: '10px' }}>CONFERMA CHIUSURA</button>
           </div>
         )}
       </div>
