@@ -22,7 +22,6 @@ export default function StaffDashboard({ onBack }) {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      // Usiamo encodeURIComponent per sicurezza sulla password
       const resp = await fetch(`${SCRIPT_URL}?action=adminLogin&password=${encodeURIComponent(pass)}`);
       const res = await resp.json();
       if (res.success) {
@@ -40,7 +39,6 @@ export default function StaffDashboard({ onBack }) {
         fetch(`${SCRIPT_URL}?action=getAllEvents`).then(r => r.json()),
         fetch(`${SCRIPT_URL}?action=getWaitingList`).then(r => r.json())
       ]);
-      // Assicuriamoci che siano array per evitare bug nei .map()
       setData({ 
         agenda: Array.isArray(ag) ? ag : [], 
         attesa: Array.isArray(at) ? at : [] 
@@ -114,17 +112,17 @@ export default function StaffDashboard({ onBack }) {
 
   if (!isAdmin) {
     return (
-      <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: THEME.bg, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', marginBottom: '20px' }}>← Torna all'App</button>
-        <h2 style={{ color: THEME.gold, fontSize: '2rem' }}>STAFF LOGIN</h2>
+      <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: THEME.bg, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
+        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', marginBottom: '40px' }}>← Torna all'App</button>
+        <h2 style={{ color: THEME.gold, fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 30px 0' }}>STAFF LOGIN</h2>
         <input 
           type="password" 
           placeholder="Password" 
           value={pass} 
           onChange={(e) => setPass(e.target.value)}
-          style={{ width: '100%', maxWidth: '300px', padding: '15px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', marginTop: '20px', textAlign: 'center' }}
+          style={{ width: '100%', maxWidth: '300px', padding: '18px', borderRadius: '12px', border: '1px solid #333', background: '#111', color: '#fff', textAlign: 'center', fontSize: '1.1rem', boxSizing: 'border-box' }}
         />
-        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '300px', padding: '15px', background: THEME.goldGradient, border: 'none', borderRadius: '10px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer', color: '#000' }}>
+        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '300px', padding: '18px', background: THEME.goldGradient, border: 'none', borderRadius: '12px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer', color: '#000', fontSize: '1.1rem' }}>
           {loading ? "ACCESSO..." : "ACCEDI"}
         </button>
       </div>
@@ -132,22 +130,23 @@ export default function StaffDashboard({ onBack }) {
   }
 
   return (
-    <div style={{ width: '100%', minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', padding: '20px', boxSizing: 'border-box' }}>
+    <div style={{ width: '100%', minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', padding: '20px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '600px', margin: '0 auto 30px' }}>
-        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', fontWeight: 'bold' }}>ESCI</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '500px', marginBottom: '30px' }}>
+        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>ESCI</button>
         <h3 style={{ color: THEME.gold, margin: 0 }}>Admin Danilo</h3>
-        <button onClick={caricaTuttiIDati} style={{ background: '#222', border: 'none', color: '#fff', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}>↻</button>
+        <button onClick={caricaTuttiIDati} style={{ background: '#222', border: 'none', color: '#fff', padding: '10px 14px', borderRadius: '10px', cursor: 'pointer' }}>↻</button>
       </div>
 
       {/* Navigazione */}
-      <div style={{ display: 'flex', gap: '10px', maxWidth: '600px', margin: '0 auto 25px' }}>
+      <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '500px', marginBottom: '25px' }}>
         {['agenda', 'attesa', 'ferie'].map((m) => (
           <button 
             key={m} 
             onClick={() => setView(m)} 
             style={{ 
-              flex: 1, padding: '12px', borderRadius: '10px', border: 'none', fontWeight: 'bold', fontSize: '0.75rem',
+              flex: 1, padding: '14px', borderRadius: '10px', border: 'none', fontWeight: 'bold', fontSize: '0.8rem',
               background: view === m ? THEME.goldGradient : '#1a1a1a', 
               color: view === m ? '#000' : '#fff', cursor: 'pointer'
             }}
@@ -157,97 +156,94 @@ export default function StaffDashboard({ onBack }) {
         ))}
       </div>
 
-      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+      {/* Contenuto centrato */}
+      <div style={{ width: '100%', maxWidth: '500px' }}>
         {loading ? (
           <p style={{ textAlign: 'center', color: THEME.gold }}>Aggiornamento dati...</p>
         ) : (
-          <div>
-            {/* AGENDA */}
+          <>
             {view === 'agenda' && (
               data.agenda.length > 0 ? data.agenda.map((ev, i) => (
-                <div key={i} style={{ background: THEME.glass, padding: '15px', borderRadius: THEME.radius, marginBottom: '12px', borderLeft: `4px solid ${THEME.gold}` }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{ev.title}</div>
-                  <div style={{ color: THEME.gold, fontSize: '0.85rem', margin: '5px 0' }}>📅 {new Date(ev.start).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+                <div key={i} style={{ background: THEME.glass, padding: '18px', borderRadius: THEME.radius, marginBottom: '12px', borderLeft: `4px solid ${THEME.gold}` }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{ev.title}</div>
+                  <div style={{ color: THEME.gold, fontSize: '0.9rem', margin: '5px 0' }}>📅 {new Date(ev.start).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
                   <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-                    <a href={`tel:${ev.desc?.match(/Tel: (.*)/)?.[1]}`} style={{ flex: 1, background: '#333', color: '#fff', textAlign: 'center', padding: '10px', borderRadius: '8px', textDecoration: 'none', fontSize: '0.8rem' }}>📞 Chiama</a>
-                    <button onClick={() => cancellaAppuntamento(ev.id)} style={{ flex: 1, background: '#441111', color: '#ff4444', border: 'none', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer' }}>Elimina</button>
+                    <a href={`tel:${ev.desc?.match(/Tel: (.*)/)?.[1]}`} style={{ flex: 1, background: '#333', color: '#fff', textAlign: 'center', padding: '10px', borderRadius: '8px', textDecoration: 'none', fontSize: '0.85rem' }}>📞 Chiama</a>
+                    <button onClick={() => cancellaAppuntamento(ev.id)} style={{ flex: 1, background: '#441111', color: '#ff4444', border: 'none', borderRadius: '8px', fontSize: '0.85rem', cursor: 'pointer' }}>Elimina</button>
                   </div>
                 </div>
               )) : <p style={{ textAlign: 'center', opacity: 0.5 }}>Agenda vuota.</p>
             )}
 
-            {/* LISTA ATTESA */}
             {view === 'attesa' && (
               data.attesa.length > 0 ? data.attesa.map((w, i) => (
                 <div key={i} style={{ 
                   background: w.stato === 'CONTATTATO' ? 'rgba(212, 175, 55, 0.1)' : THEME.glass, 
-                  padding: '15px', borderRadius: THEME.radius, marginBottom: '12px', 
+                  padding: '18px', borderRadius: THEME.radius, marginBottom: '12px', 
                   border: w.stato === 'CONTATTATO' ? `1px solid ${THEME.gold}` : '1px solid #333' 
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 'bold' }}>{w.nome}</span>
+                    <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{w.nome}</span>
                     {w.stato === 'CONTATTATO' && <span style={{ color: THEME.gold, fontSize: '0.7rem', fontWeight: 'bold' }}>● CONTATTATO</span>}
                   </div>
-                  <div style={{ fontSize: '0.85rem', opacity: 0.8, marginTop: '5px' }}>Richiesta per: {w.giorno}</div>
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
+                  <div style={{ fontSize: '0.9rem', opacity: 0.8, marginTop: '5px' }}>Richiesta per: {w.giorno}</div>
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
                     <a 
                       href={`https://wa.me/${w.tel?.replace(/\D/g,'')}?text=Ciao ${w.nome}, sono Danilo di DonBlendz...`} 
                       onClick={() => segnaContattato(w)}
-                      style={{ flex: 2, background: '#25D366', color: '#fff', textAlign: 'center', padding: '10px', borderRadius: '8px', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 'bold' }}
+                      style={{ flex: 2, background: '#25D366', color: '#fff', textAlign: 'center', padding: '10px', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 'bold' }}
                     >
                       💬 WhatsApp
                     </a>
-                    <button onClick={() => rimuoviDaAttesa(w.rowId)} style={{ flex: 1, background: '#333', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer' }}>Rimuovi</button>
+                    <button onClick={() => rimuoviDaAttesa(w.rowId)} style={{ flex: 1, background: '#333', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '0.85rem', cursor: 'pointer' }}>Rimuovi</button>
                   </div>
                 </div>
               )) : <p style={{ textAlign: 'center', opacity: 0.5 }}>Lista d'attesa vuota.</p>
             )}
 
-            {/* FERIE - Layout Centrato e Fixed */}
             {view === 'ferie' && (
               <div style={{ background: THEME.glass, padding: '25px', borderRadius: THEME.radius, border: '1px solid #222' }}>
-                <h3 style={{ color: THEME.gold, marginTop: 0, textAlign: 'center' }}>Blocca Orario</h3>
+                <h3 style={{ color: THEME.gold, marginTop: 0, textAlign: 'center', fontSize: '1.3rem' }}>Blocca Orario</h3>
                 
                 <div style={{ marginBottom: '20px' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Seleziona Giorno</label>
+                  <label style={{ fontSize: '0.9rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Seleziona Giorno</label>
                   <input 
                     type="date" 
                     value={feriaForm.data} 
                     onChange={e => setFeriaForm({...feriaForm, data: e.target.value})} 
-                    style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box' }} 
+                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem' }} 
                   />
                 </div>
                 
-                <div style={{ display: 'flex', gap: '15px', marginBottom: '25px' }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Dalle ore:</label>
-                    <input 
-                      type="time" 
-                      value={feriaForm.inizio} 
-                      onChange={e => setFeriaForm({...feriaForm, inizio: e.target.value})} 
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box' }} 
-                    />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Alle ore:</label>
-                    <input 
-                      type="time" 
-                      value={feriaForm.fine} 
-                      onChange={e => setFeriaForm({...feriaForm, fine: e.target.value})} 
-                      style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box' }} 
-                    />
-                  </div>
+                {/* Orari uno sotto l'altro per evitare bug layout */}
+                <div style={{ marginBottom: '15px' }}>
+                  <label style={{ fontSize: '0.9rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Dalle ore:</label>
+                  <input 
+                    type="time" 
+                    value={feriaForm.inizio} 
+                    onChange={e => setFeriaForm({...feriaForm, inizio: e.target.value})} 
+                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem' }} 
+                  />
+                </div>
+                <div style={{ marginBottom: '25px' }}>
+                  <label style={{ fontSize: '0.9rem', color: '#aaa', display: 'block', marginBottom: '8px' }}>Alle ore:</label>
+                  <input 
+                    type="time" 
+                    value={feriaForm.fine} 
+                    onChange={e => setFeriaForm({...feriaForm, fine: e.target.value})} 
+                    style={{ width: '100%', padding: '14px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', boxSizing: 'border-box', fontSize: '1rem' }} 
+                  />
                 </div>
                 
                 <button 
                   onClick={salvaFeria} 
-                  style={{ width: '100%', padding: '15px', background: THEME.goldGradient, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer' }}
+                  style={{ width: '100%', padding: '18px', background: THEME.goldGradient, color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '12px', fontSize: '1.1rem', cursor: 'pointer' }}
                 >
                   CONFERMA CHIUSURA
                 </button>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
