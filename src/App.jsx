@@ -253,7 +253,7 @@ export default function App() {
               e.target.src = "logo512.png";
             }}
           />
-          <div style={styles.loadingText}>V 2.1</div>
+          <div style={styles.loadingText}>V 2.2</div>
         </div>
       )}
 
