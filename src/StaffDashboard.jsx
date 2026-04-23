@@ -26,7 +26,7 @@ export default function StaffDashboard({ onBack }) {
       if (res.success) {
         setIsAdmin(true);
         caricaTuttiIDati();
-      } else { alert("Password errata, Danilo!"); }
+      } else { alert("Password errata!"); }
     } catch (e) { alert("Errore di connessione allo script."); }
     setLoading(false);
   };
