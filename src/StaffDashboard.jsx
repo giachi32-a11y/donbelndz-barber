@@ -51,7 +51,6 @@ export default function StaffDashboard({ onBack }) {
     
     setLoading(true);
     try {
-      // Nota: lo script dovrà gestire l'azione 'confirmFromWaitingList'
       await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -62,7 +61,7 @@ export default function StaffDashboard({ onBack }) {
         })
       });
       alert("Richiesta inviata! L'appuntamento verrà creato e il cliente rimosso dalla lista.");
-      caricaTuttiIDati(); // Ricarica per vedere i cambiamenti
+      caricaTuttiIDati(); 
     } catch (e) { alert("Errore nella conferma."); }
     setLoading(false);
   };
@@ -71,7 +70,7 @@ export default function StaffDashboard({ onBack }) {
   const toggleFeria = async (dataScelta) => {
     let nuoveFerie;
     if (data.ferie.includes(dataScelta)) {
-      nuveFerie = data.ferie.filter(d => d !== dataScelta);
+      nuoveFerie = data.ferie.filter(d => d !== dataScelta);
     } else {
       nuoveFerie = [...data.ferie, dataScelta];
     }
@@ -92,18 +91,42 @@ export default function StaffDashboard({ onBack }) {
   // Schermata Login
   if (!isAdmin) {
     return (
-      <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: THEME.bg, minHeight: '100vh' }}>
-        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>← Torna all'App</button>
+      <div style={{ padding: '40px 20px', textAlign: 'center', backgroundColor: THEME.bg, minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', alignSelf: 'center' }}>← Torna all'App</button>
         <h2 style={{ color: THEME.gold, marginTop: '30px', fontSize: '2rem' }}>Staff Login</h2>
-        <div style={{ marginTop: '20px' }}>
+        <div style={{ marginTop: '20px', width: '100%', maxWidth: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <input 
             type="password" 
             placeholder="Inserire la Password" 
             value={pass} 
             onChange={(e) => setPass(e.target.value)}
-            style={{ width: '100%', maxWidth: '300px', padding: '15px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', fontSize: '1rem', outline: 'none' }}
+            style={{ 
+              width: '100%', 
+              padding: '15px', 
+              borderRadius: '10px', 
+              border: '1px solid #333', 
+              background: '#111', 
+              color: '#fff', 
+              fontSize: '1rem', 
+              outline: 'none',
+              boxSizing: 'border-box' // ALLINEAMENTO CORRETTO
+            }}
           />
-          <button onClick={handleLogin} style={{ width: '100%', maxWidth: '300px', padding: '15px', background: THEME.goldGradient, border: 'none', borderRadius: '10px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer', color: '#000' }}>
+          <button 
+            onClick={handleLogin} 
+            style={{ 
+              width: '100%', 
+              padding: '15px', 
+              background: THEME.goldGradient, 
+              border: 'none', 
+              borderRadius: '10px', 
+              marginTop: '20px', 
+              fontWeight: 'bold', 
+              cursor: 'pointer', 
+              color: '#000',
+              boxSizing: 'border-box' // ALLINEAMENTO CORRETTO
+            }}
+          >
             {loading ? "ACCESSO IN CORSO..." : "ACCEDI"}
           </button>
         </div>
@@ -169,7 +192,6 @@ export default function StaffDashboard({ onBack }) {
                         <a href={`tel:${w.tel}`} style={{ flex: 1, textAlign: 'center', background: '#444', color: '#fff', padding: '8px', borderRadius: '6px', textDecoration: 'none', fontSize: '0.75rem' }}>📞 Chiama</a>
                         <a href={`https://wa.me/${w.tel.replace(/\D/g,'')}?text=Ciao ${w.nome}, sono Danilo di DonBlendz. Ti scrivo per il posto in lista d'attesa...`} style={{ flex: 1, textAlign: 'center', background: '#25D366', color: '#fff', padding: '8px', borderRadius: '6px', textDecoration: 'none', fontSize: '0.75rem' }}>💬 WhatsApp</a>
                     </div>
-                    {/* TASTO DI CONFERMA FINALE */}
                     <button 
                         onClick={() => confermaDaAttesa(w)}
                         style={{ width: '100%', background: THEME.goldGradient, color: '#000', border: 'none', padding: '10px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}
@@ -204,7 +226,6 @@ export default function StaffDashboard({ onBack }) {
               </div>
             </div>
           )}
-
         </div>
       )}
     </div>
