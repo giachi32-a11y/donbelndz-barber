@@ -104,16 +104,19 @@ export default function StaffDashboard({ onBack }) {
   if (!isAdmin) {
     return (
       <div style={{ padding: '20px', textAlign: 'center', backgroundColor: THEME.bg, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
-        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', marginBottom: '40px' }}>← Torna all'App</button>
-        <h2 style={{ color: THEME.gold, fontSize: '2.8rem', fontWeight: 'bold', margin: '0 0 30px 0' }}>STAFF LOGIN</h2>
+        <button onClick={onBack} style={{ color: THEME.gold, background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', marginBottom: '50px', opacity: 0.8 }}>← Torna all'App</button>
+        
+        <h2 style={{ color: THEME.gold, fontSize: '2.5rem', fontWeight: 'bold', margin: '0 0 30px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>STAFF LOGIN</h2>
+        
         <input 
           type="password" 
-          placeholder="Password" 
+          placeholder="Inserire la Password" 
           value={pass} 
           onChange={(e) => setPass(e.target.value)}
-          style={{ width: '100%', maxWidth: '280px', padding: '15px', borderRadius: '10px', border: '1px solid #333', background: '#111', color: '#fff', textAlign: 'center', fontSize: '1.1rem', boxSizing: 'border-box', outline: 'none' }}
+          style={{ width: '100%', maxWidth: '280px', padding: '16px', borderRadius: '12px', border: '1px solid #333', background: '#111', color: '#fff', textAlign: 'center', fontSize: '1rem', boxSizing: 'border-box', outline: 'none', marginBottom: '20px' }}
         />
-        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '280px', padding: '15px', background: THEME.goldGradient, border: 'none', borderRadius: '10px', marginTop: '20px', fontWeight: 'bold', cursor: 'pointer', color: '#000', fontSize: '1rem' }}>
+        
+        <button onClick={handleLogin} style={{ width: '100%', maxWidth: '280px', padding: '16px', background: THEME.goldGradient, border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', color: '#000', fontSize: '1rem', textTransform: 'uppercase' }}>
           {loading ? "ACCESSO..." : "ACCEDI"}
         </button>
       </div>
@@ -176,7 +179,6 @@ export default function StaffDashboard({ onBack }) {
               <div style={{ background: THEME.glass, padding: '20px', borderRadius: THEME.radius, border: '1px solid #222' }}>
                 <h3 style={{ color: THEME.gold, marginTop: 0, marginBottom: '20px', textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold' }}>BLOCCA CALENDARIO</h3>
                 
-                {/* Contenitore interno con padding per centrare gli input */}
                 <div style={{ padding: '0 10px' }}>
                   <div style={{ marginBottom: '15px' }}>
                     <label style={{ fontSize: '0.85rem', color: '#aaa', display: 'block', marginBottom: '6px' }}>Dal giorno:</label>
