@@ -10,7 +10,7 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzXnC-F9U7J-fh6tAFhJa3wQPOAznldkprszDlT_Hckuy33qcKlzwzl83e8MZXkGfzSKA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwilt-JjHIZgApYDsIZKdMrI-34O6vCigJ4lSZhfyVfK3q0x1sbJgctW_ZvLW-E_vkmuA/exec";
 
 const styles = {
   splash: { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', zIndex: 9999, transition: 'opacity 0.8s ease' },
