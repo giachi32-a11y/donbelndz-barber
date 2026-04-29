@@ -67,14 +67,24 @@ export default function StaffDashboard({ onBack }) {
 
   useEffect(() => { if (isAdmin) caricaDati(); }, [isAdmin]);
 
-  const handleLogin = async () => {
+    const handleLogin = async () => {
     setLoading(true);
     try {
-      const resp = await fetch(`${SCRIPT_URL}?action=adminLogin&password=${encodeURIComponent(pass)}`);
+      const resp = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        // Rimuoviamo mode: 'no-cors' per il login perché abbiamo bisogno di leggere la risposta JSON
+        body: JSON.stringify({ 
+          action: 'adminLogin', 
+          password: pass 
+        })
+      });
       const res = await resp.json();
       if (res.success) setIsAdmin(true);
       else alert("Password errata!");
-    } catch (e) { alert("Errore connessione."); }
+    } catch (e) { 
+      console.error(e);
+      alert("Errore connessione."); 
+    }
     setLoading(false);
   };
 
