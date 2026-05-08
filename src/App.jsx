@@ -280,35 +280,36 @@ export default function App() {
             </div>
           } />
 
-         <Route path="/servizi" element={
+        <Route path="/servizi" element={
   <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-    <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'10px', alignSelf: 'flex-start'}}>← Home</button>
+    <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'5px', alignSelf: 'flex-start'}}>← Home</button>
     
-    {/* BLOCCO: SERVIZI STYLING */}
-    <div style={{marginBottom: '35px', textAlign: 'center', width: '100%'}}>
-      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '5px', fontSize: '1.8rem', letterSpacing: '1px'}}>SERVIZI STYLING</h2>
-      <p style={{fontSize: '0.9rem', color: '#888', marginBottom: '20px', fontStyle: 'italic'}}>Comprensivi di taglio</p>
+    {/* BLOCCO: SERVIZI STYLING (Spazi ridotti) */}
+    <div style={{marginBottom: '15px', textAlign: 'center', width: '100%'}}>
+      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px'}}>SERVIZI STYLING</h2>
+      <p style={{fontSize: '0.8rem', color: '#888', marginBottom: '12px', fontStyle: 'italic'}}>Comprensivi di taglio</p>
       {[
         {n: "Decolorazione", p: "70,00 €"},
         {n: "Mesh", p: "60,00 €"}
       ].map(s => (
         <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} 
-             style={{...styles.serviceCard, border: `1px solid ${THEME.gold}44`, background: 'rgba(212, 175, 55, 0.05)', margin: '0 auto 10px auto'}}>
+             style={{...styles.serviceCard, border: `1px solid ${THEME.gold}44`, background: 'rgba(212, 175, 55, 0.05)', margin: '0 auto 8px auto', padding: '12px 18px'}}>
           <span style={{fontWeight: '700'}}>{s.n.toUpperCase()}</span>
           <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
         </div>
       ))}
     </div>
 
-    {/* TITOLO SERVIZI CLASSICI E NUOVO SOTTOTITOLO */}
-    <div style={{textAlign: 'center', marginBottom: '20px', width: '100%'}}>
-      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '5px', fontSize: '1.8rem', letterSpacing: '1px', textTransform: 'uppercase'}}>Scegli Un Servizio</h2>
-      <p style={{fontSize: '0.9rem', color: '#888', fontStyle: 'italic'}}>Taglio ragazzo: fino medie e/o superiori</p>
+    {/* TITOLO SERVIZI CLASSICI (Spazio superiore minimizzato) */}
+    <div style={{textAlign: 'center', marginBottom: '12px', width: '100%'}}>
+      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>Scegli Un Servizio</h2>
+      <p style={{fontSize: '0.8rem', color: '#888', fontStyle: 'italic'}}>Taglio ragazzo: fino medie e/o superiori</p>
     </div>
     
     <div style={{width: '100%'}}>
       {servizi.map(s => (
-        <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} style={{...styles.serviceCard, margin: '0 auto 8px auto'}}>
+        <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} 
+             style={{...styles.serviceCard, margin: '0 auto 6px auto', padding: '12px 18px'}}>
           <span style={{fontWeight: '600'}}>{s.n}</span>
           <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
         </div>
@@ -316,6 +317,7 @@ export default function App() {
     </div>
   </div>
 } />
+
 
 
 
