@@ -281,30 +281,38 @@ export default function App() {
           } />
 
           <Route path="/servizi" element={
-            <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px'}}>
-              <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'10px'}}>← Home</button>
-              <h2 style={{textAlign:'center', fontWeight:'700'}}>Scegli Un Servizio</h2>
-              {servizi.map(s => (
-                <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} style={styles.serviceCard}>
-                  <span style={{fontWeight: '600'}}>{s.n}</span><span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
-                </div>
-              ))}
-              <div style={{marginTop: '30px', padding: '20px', background: THEME.glass, borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center'}}>
-                <h3 style={{color: THEME.gold, fontSize: '1rem', marginBottom: '15px', textTransform: 'uppercase'}}>Trattamenti / Hairstyling</h3>
-                <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
-                  {['Mesh', 'Colorazione'].map(s => ( <button key={s} onClick={() => setServizioExtra(s)} style={{flex: 1, padding: '12px', borderRadius: '10px', border: servizioExtra === s ? `2px solid ${THEME.gold}` : '1px solid #333', background: servizioExtra === s ? 'rgba(212, 175, 55, 0.1)' : 'transparent', color: '#fff', fontWeight: 'bold'}}>{s}</button> ))}
-                </div>
-                {servizioExtra && (
-                  <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
-                    <input placeholder="Nome e Cognome" value={datiExtra.nome} onChange={(e) => setDatiExtra({...datiExtra, nome: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
-                    <input placeholder="Email" value={datiExtra.email} onChange={(e) => setDatiExtra({...datiExtra, email: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
-                    <input placeholder="Cellulare" type="tel" value={datiExtra.tel} onChange={(e) => setDatiExtra({...datiExtra, tel: e.target.value})} style={{...styles.inputField, marginTop: 0, padding: '12px', fontSize: '0.9rem'}} />
-                    <a href={`https://wa.me/393447875378?text=${encodeURIComponent(`Ciao Danilo, vorrei prenotare il servizio: ${servizioExtra}.\n\nI MIEI RECAPITI:\n👤 Nome: ${datiExtra.nome}\n📧 Email: ${datiExtra.email}\n📞 Tel: ${datiExtra.tel}\n\nAttendo la tua conferma per giorno ed orario.`)}`} target="_blank" rel="noopener noreferrer" style={{background: THEME.goldGradient, color: '#000', padding: '15px', borderRadius: '12px', fontWeight: 'bold', textDecoration: 'none', marginTop: '10px', fontSize: '0.9rem'}}>PRENOTA SU WHATSAPP 💬</a>
-                  </div>
-                )}
-              </div>
-            </div>
-          } />
+  <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px'}}>
+    <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'10px'}}>← Home</button>
+    
+    {/* NUOVO BLOCCO: SERVIZI STYLING */}
+    <div style={{marginBottom: '30px', textAlign: 'left'}}>
+      <h2 style={{fontWeight:'700', color: THEME.gold, marginBottom: '5px', fontSize: '1.5rem'}}>SERVIZI STYLING</h2>
+      <p style={{fontSize: '0.85rem', color: '#888', marginBottom: '15px', fontStyle: 'italic'}}>Comprensivi di taglio</p>
+      {[
+        {n: "Decolorazione", p: "70,00 €"},
+        {n: "Mesh", p: "60,00 €"}
+      ].map(s => (
+        <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} 
+             style={{...styles.serviceCard, border: `1px solid ${THEME.gold}44`, background: 'rgba(212, 175, 55, 0.05)'}}>
+          <span style={{fontWeight: '700'}}>{s.n.toUpperCase()}</span>
+          <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
+        </div>
+      ))}
+    </div>
+
+    {/* BLOCCO VECCHI SERVIZI (Invariato come richiesto) */}
+    <h2 style={{textAlign:'center', fontWeight:'700', marginBottom: '15px'}}>Scegli Un Servizio</h2>
+    {servizi.map(s => (
+      <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} style={styles.serviceCard}>
+        <span style={{fontWeight: '600'}}>{s.n}</span>
+        <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
+      </div>
+    ))}
+    
+    {/* Blocco WhatsApp rimosso come richiesto */}
+  </div>
+} />
+
 
           <Route path="/prenota" element={
             <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px'}}>
