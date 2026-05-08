@@ -280,38 +280,43 @@ export default function App() {
             </div>
           } />
 
-          <Route path="/servizi" element={
-  <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px'}}>
-    <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'10px'}}>← Home</button>
+         <Route path="/servizi" element={
+  <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+    <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'10px', alignSelf: 'flex-start'}}>← Home</button>
     
-    {/* NUOVO BLOCCO: SERVIZI STYLING */}
-    <div style={{marginBottom: '30px', textAlign: 'left'}}>
-      <h2 style={{fontWeight:'700', color: THEME.gold, marginBottom: '5px', fontSize: '1.5rem'}}>SERVIZI STYLING</h2>
-      <p style={{fontSize: '0.85rem', color: '#888', marginBottom: '15px', fontStyle: 'italic'}}>Comprensivi di taglio</p>
+    {/* BLOCCO: SERVIZI STYLING */}
+    <div style={{marginBottom: '35px', textAlign: 'center', width: '100%'}}>
+      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '5px', fontSize: '1.8rem', letterSpacing: '1px'}}>SERVIZI STYLING</h2>
+      <p style={{fontSize: '0.9rem', color: '#888', marginBottom: '20px', fontStyle: 'italic'}}>Comprensivi di taglio</p>
       {[
         {n: "Decolorazione", p: "70,00 €"},
         {n: "Mesh", p: "60,00 €"}
       ].map(s => (
         <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} 
-             style={{...styles.serviceCard, border: `1px solid ${THEME.gold}44`, background: 'rgba(212, 175, 55, 0.05)'}}>
+             style={{...styles.serviceCard, border: `1px solid ${THEME.gold}44`, background: 'rgba(212, 175, 55, 0.05)', margin: '0 auto 10px auto'}}>
           <span style={{fontWeight: '700'}}>{s.n.toUpperCase()}</span>
           <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
         </div>
       ))}
     </div>
 
-    {/* BLOCCO VECCHI SERVIZI (Invariato come richiesto) */}
-    <h2 style={{textAlign:'center', fontWeight:'700', marginBottom: '15px'}}>Scegli Un Servizio</h2>
-    {servizi.map(s => (
-      <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} style={styles.serviceCard}>
-        <span style={{fontWeight: '600'}}>{s.n}</span>
-        <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
-      </div>
-    ))}
+    {/* TITOLO SERVIZI CLASSICI E NUOVO SOTTOTITOLO */}
+    <div style={{textAlign: 'center', marginBottom: '20px', width: '100%'}}>
+      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '5px', fontSize: '1.8rem', letterSpacing: '1px', textTransform: 'uppercase'}}>Scegli Un Servizio</h2>
+      <p style={{fontSize: '0.9rem', color: '#888', fontStyle: 'italic'}}>Taglio ragazzo: fino medie e/o superiori</p>
+    </div>
     
-    {/* Blocco WhatsApp rimosso come richiesto */}
+    <div style={{width: '100%'}}>
+      {servizi.map(s => (
+        <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} style={{...styles.serviceCard, margin: '0 auto 8px auto'}}>
+          <span style={{fontWeight: '600'}}>{s.n}</span>
+          <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
+        </div>
+      ))}
+    </div>
   </div>
 } />
+
 
 
           <Route path="/prenota" element={
