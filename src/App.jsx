@@ -286,7 +286,7 @@ export default function App() {
     
     {/* BLOCCO: SERVIZI STYLING (Spazi ridotti) */}
     <div style={{marginBottom: '15px', textAlign: 'center', width: '100%'}}>
-      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px'}}>STYLING SERVICES</h2>
+      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px'}}>SERVIZI DI STYLING</h2>
       <p style={{fontSize: '0.8rem', color: '#888', marginBottom: '12px', fontStyle: 'italic'}}>Comprensivi di taglio</p>
       {[
         {n: "Decolorazione", p: "70,00 €"},
@@ -302,7 +302,7 @@ export default function App() {
 
     {/* TITOLO SERVIZI CLASSICI (Spazio superiore minimizzato) */}
     <div style={{textAlign: 'center', marginBottom: '12px', width: '100%'}}>
-      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>CLASSIC SERVICES</h2>
+      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SERVIZI CLASSICI</h2>
       <p style={{fontSize: '0.8rem', color: '#888', fontStyle: 'italic'}}>Taglio ragazzo: fino medie e/o superiori</p>
     </div>
     
