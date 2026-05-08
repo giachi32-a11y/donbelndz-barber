@@ -318,57 +318,61 @@ export default function App() {
   </div>
 } />
 
-          <Route path="/prenota" element={
+         <Route path="/prenota" element={
   <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px'}}>
     <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
     <h2 style={{fontSize:'1.6rem', marginBottom:'20px'}}>Scegli data e ora</h2>
     
-    {/* CONTENITORE INPUT DATA MODIFICATO */}
-    <div style={{position: 'relative', width: '100%', maxWidth: '300px'}}>
-      <input 
-        type="date" 
-        min={todayStr} 
-        onChange={(e) => handleDateChange(e.target.value)} 
-        style={{
-          ...styles.dateInput,
-          width: '100%',
-          background: THEME.goldGradient, // Oro sfumato
-          color: 'transparent',           // Nascondiamo il testo interno (GG/MM/AAAA) per mostrare la nostra scritta
-          border: 'none',
-          padding: '18px',
-          borderRadius: '12px',
-          cursor: 'pointer',
-          position: 'relative',
-          zIndex: 2,
-          appearance: 'none',             // Rimuove stile browser
-          WebkitAppearance: 'none'
-        }} 
-      />
-      {/* Scritta visibile sotto l'input (che è trasparente) */}
-      <div style={{
+    {/* CONTENITORE PROFESSIONALE PER IL CALENDARIO */}
+    <div style={{position: 'relative', width: '100%', maxWidth: '300px', height: '55px'}}>
+      <label style={{
         position: 'absolute',
         top: 0,
         left: 0,
-        width: '100%',
-        height: '100%',
+        right: 0,
+        bottom: 0,
+        background: THEME.goldGradient,
+        borderRadius: '12px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#000',
-        fontWeight: '800',
-        fontSize: '0.9rem',
-        pointerEvents: 'none', // Il click passa attraverso e tocca l'input
-        zIndex: 1,
-        textTransform: 'uppercase',
-        letterSpacing: '1px'
+        cursor: 'pointer',
+        boxShadow: '0 4px 15px rgba(212, 175, 55, 0.2)',
+        zIndex: 1
       }}>
-        {dataSel ? dataSel.split('-').reverse().join('/') : "📅 APRI CALENDARIO"}
-      </div>
+        <span style={{
+          color: '#000',
+          fontWeight: '800',
+          fontSize: '0.9rem',
+          textTransform: 'uppercase',
+          letterSpacing: '1px'
+        }}>
+          {dataSel ? dataSel.split('-').reverse().join('/') : "📅 APRI CALENDARIO"}
+        </span>
+        
+        {/* L'input è qui ma è totalmente invisibile, serve solo ad attivare il click */}
+        <input 
+          type="date" 
+          min={todayStr} 
+          onChange={(e) => handleDateChange(e.target.value)} 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            opacity: 0, // Lo rende invisibile al 100%
+            cursor: 'pointer',
+            zIndex: 2,
+            appearance: 'none',
+            WebkitAppearance: 'none'
+          }} 
+        />
+      </label>
     </div>
 
-    {loading && <p style={{color: THEME.gold, marginTop: '10px'}}>Controllo agenda...</p>}
+    {loading && <p style={{color: THEME.gold, marginTop: '15px'}}>Controllo agenda...</p>}
     
-    {/* RESTO DEL CODICE INVARIATO */}
     {isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Non puoi prenotare nel passato.</div>}
     {dataSel && chiuso && !isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Siamo chiusi. Scegli un altro giorno.</div>}
     
@@ -391,6 +395,7 @@ export default function App() {
     {oraSel && <button onClick={() => navigate('/dati-cliente')} style={{...styles.mainButton, marginTop:'40px', width:'100%'}}>CONTINUA</button>}
   </div>
 } />
+
 
 
           <Route path="/lista-attesa" element={
