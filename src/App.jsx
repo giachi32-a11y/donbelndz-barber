@@ -318,36 +318,80 @@ export default function App() {
   </div>
 } />
 
-
-
-
           <Route path="/prenota" element={
-            <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px'}}>
-              <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
-              <h2 style={{fontSize:'1.6rem', marginBottom:'20px'}}>Scegli data e ora</h2>
-              <input type="date" min={todayStr} onChange={(e) => handleDateChange(e.target.value)} style={styles.dateInput} />
-              {loading && <p style={{color: THEME.gold, marginTop: '10px'}}>Controllo agenda...</p>}
-              {isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Non puoi prenotare nel passato.</div>}
-              {dataSel && chiuso && !isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Siamo chiusi. Scegli un altro giorno.</div>}
-              {dataSel && !chiuso && !loading && !isPast && (
-                <>
-                  <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', width:'100%', marginTop:'30px'}}>
-                    {getTimes().map(t => {
-                      const isBusy = occupati.includes(t);
-                      return ( <button key={t} disabled={isBusy} onClick={() => setOraSel(t)} style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button> );
-                    })}
-                  </div>
-                  {tuttoPieno && (
-                    <div style={{marginTop: '30px', padding: '20px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '14px', border: `1px solid ${THEME.gold}`, width: '100%', boxSizing: 'border-box'}}>
-                      <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Posti esauriti!</p>
-                      <button onClick={() => navigate('/lista-attesa')} style={{...styles.mainButton, fontSize: '0.85rem', padding: '12px 20px'}}> AVVISAMI SE SI LIBERA UN POSTO 🔔 </button>
-                    </div>
-                  )}
-                </>
-              )}
-              {oraSel && <button onClick={() => navigate('/dati-cliente')} style={{...styles.mainButton, marginTop:'40px', width:'100%'}}>CONTINUA</button>}
-            </div>
-          } />
+  <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px'}}>
+    <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
+    <h2 style={{fontSize:'1.6rem', marginBottom:'20px'}}>Scegli data e ora</h2>
+    
+    {/* CONTENITORE INPUT DATA MODIFICATO */}
+    <div style={{position: 'relative', width: '100%', maxWidth: '300px'}}>
+      <input 
+        type="date" 
+        min={todayStr} 
+        onChange={(e) => handleDateChange(e.target.value)} 
+        style={{
+          ...styles.dateInput,
+          width: '100%',
+          background: THEME.goldGradient, // Oro sfumato
+          color: 'transparent',           // Nascondiamo il testo interno (GG/MM/AAAA) per mostrare la nostra scritta
+          border: 'none',
+          padding: '18px',
+          borderRadius: '12px',
+          cursor: 'pointer',
+          position: 'relative',
+          zIndex: 2,
+          appearance: 'none',             // Rimuove stile browser
+          WebkitAppearance: 'none'
+        }} 
+      />
+      {/* Scritta visibile sotto l'input (che è trasparente) */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#000',
+        fontWeight: '800',
+        fontSize: '0.9rem',
+        pointerEvents: 'none', // Il click passa attraverso e tocca l'input
+        zIndex: 1,
+        textTransform: 'uppercase',
+        letterSpacing: '1px'
+      }}>
+        {dataSel ? dataSel.split('-').reverse().join('/') : "📅 APRI CALENDARIO"}
+      </div>
+    </div>
+
+    {loading && <p style={{color: THEME.gold, marginTop: '10px'}}>Controllo agenda...</p>}
+    
+    {/* RESTO DEL CODICE INVARIATO */}
+    {isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Non puoi prenotare nel passato.</div>}
+    {dataSel && chiuso && !isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Siamo chiusi. Scegli un altro giorno.</div>}
+    
+    {dataSel && !chiuso && !loading && !isPast && (
+      <>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', width:'100%', marginTop:'30px'}}>
+          {getTimes().map(t => {
+            const isBusy = occupati.includes(t);
+            return ( <button key={t} disabled={isBusy} onClick={() => setOraSel(t)} style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button> );
+          })}
+        </div>
+        {tuttoPieno && (
+          <div style={{marginTop: '30px', padding: '20px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '14px', border: `1px solid ${THEME.gold}`, width: '100%', boxSizing: 'border-box'}}>
+            <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Posti esauriti!</p>
+            <button onClick={() => navigate('/lista-attesa')} style={{...styles.mainButton, fontSize: '0.85rem', padding: '12px 20px'}}> AVVISAMI SE SI LIBERA UN POSTO 🔔 </button>
+          </div>
+        )}
+      </>
+    )}
+    {oraSel && <button onClick={() => navigate('/dati-cliente')} style={{...styles.mainButton, marginTop:'40px', width:'100%'}}>CONTINUA</button>}
+  </div>
+} />
+
 
           <Route path="/lista-attesa" element={
             <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
