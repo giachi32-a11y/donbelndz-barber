@@ -321,7 +321,7 @@ export default function App() {
          <Route path="/prenota" element={
   <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px'}}>
     <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
-    <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '20px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SCEGLI DATA E ORARIO</h2>
+    <h2 style={{fontWeight:'800', color: '#fff' , marginBottom: '20px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SCEGLI DATA E ORA</h2>
     
     {/* CONTENITORE PROFESSIONALE PER IL CALENDARIO */}
     <div style={{position: 'relative', width: '100%', maxWidth: '300px', height: '55px'}}>
