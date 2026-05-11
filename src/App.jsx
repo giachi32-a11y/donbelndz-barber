@@ -252,7 +252,7 @@ export default function App() {
           <Route path="/miei-appuntamenti" element={
             <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
               <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Home</button>
-              <h2 style={{fontSize:'1.6rem', marginBottom:'10px'}}>I tuoi appuntamenti</h2>
+              <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '10px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>I TUOI APPUNTAMENTI</h2>
               {stepDisdetta === 'ricerca' ? (
                 <>
                   <p style={{fontSize:'0.85rem', opacity:0.7, marginBottom:'20px'}}>Inserisci il tuo numero per gestire le prenotazioni</p>
