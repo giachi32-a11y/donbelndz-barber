@@ -401,7 +401,7 @@ export default function App() {
           <Route path="/lista-attesa" element={
             <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
               <button onClick={() => navigate('/prenota')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Indietro</button>
-              <h2 style={{fontSize:'1.6rem', color: THEME.gold}}>Lista d'Attesa</h2>
+              <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>LISTA D'ATTESA</h2>
               <p style={{fontSize: '0.85rem', opacity: 0.7, marginBottom: '20px'}}>Ti contatteremo se si libera un posto per il {dataSel}</p>
               <input type="text" placeholder="Nome e Cognome" value={nome} onChange={(e) => setNome(e.target.value)} style={styles.inputField} />
               <input type="email" placeholder="Email (per avviso)" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.inputField} />
