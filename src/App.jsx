@@ -250,7 +250,7 @@ export default function App() {
 
               {/* SEZIONE SOCIAL SISTEMATA */}
               <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '30px', paddingBottom: '10px' }}>
-                <a href="https://www.instagram.com/donblendz/" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.instagram.com/donblendzbarbershop?igsh=N3oxaTRnY3Z4bGk1" target="_blank" rel="noopener noreferrer">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" style={{ width: '32px', height: '32px' }} />
                 </a>
                 <a href="https://www.tiktok.com/@donblendz" target="_blank" rel="noopener noreferrer">
