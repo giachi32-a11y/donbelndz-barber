@@ -123,7 +123,6 @@ export default function App() {
     } catch (e) { alert("Errore nell'invio. Riprova."); } finally { setLoading(false); }
   };
 
-  // --- CORREZIONE FUNZIONE LISTA ATTESA ---
   const inviaListaAttesa = async () => {
     if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
     if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
@@ -244,6 +243,15 @@ export default function App() {
                 <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Scrivici su whatsapp!</p>
                 <a href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" target="_blank" rel="noopener noreferrer" style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}>CONTATTA SU WHATSAPP 💬</a>
               </div>
+              {/* SOCIAL SECTION */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '25px', marginTop: '25px', paddingBottom: '10px' }}>
+                <a href="https://www.instagram.com/donblendzbarbershop?igsh=N3oxaTRnY3Z4bGk1" target="_blank" rel="noopener noreferrer">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" style={{ width: '28px', height: '28px', filter: 'grayscale(1) brightness(1.5)' }} />
+                </a>
+                <a href="tiktok.com/@donblendzbarbershop?_r=1&_t=ZN-93BcAvmppAM" target="_blank" rel="noopener noreferrer">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/TikTok_logo.png" alt="TikTok" style={{ width: '28px', height: '28px', filter: 'grayscale(1) brightness(1.5)' }} />
+                </a>
+              </div>
             </div>
           } />
 
@@ -284,7 +292,6 @@ export default function App() {
   <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
     <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'5px', alignSelf: 'flex-start'}}>← Home</button>
     
-    {/* BLOCCO: SERVIZI STYLING (Spazi ridotti) */}
     <div style={{marginBottom: '15px', textAlign: 'center', width: '100%'}}>
       <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px'}}>SERVIZI DI STYLING</h2>
       <p style={{fontSize: '0.8rem', color: '#888', marginBottom: '12px', fontStyle: 'italic'}}>Comprensivi di taglio</p>
@@ -300,7 +307,6 @@ export default function App() {
       ))}
     </div>
 
-    {/* TITOLO SERVIZI CLASSICI (Spazio superiore minimizzato) */}
     <div style={{textAlign: 'center', marginBottom: '12px', width: '100%'}}>
       <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SERVIZI CLASSICI</h2>
       <p style={{fontSize: '0.8rem', color: '#888', fontStyle: 'italic'}}>Taglio ragazzo: fino medie e/o superiori</p>
@@ -323,7 +329,6 @@ export default function App() {
     <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
     <h2 style={{fontWeight:'800', color: '#fff' , marginBottom: '20px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SCEGLI DATA E ORA</h2>
     
-    {/* CONTENITORE PROFESSIONALE PER IL CALENDARIO */}
     <div style={{position: 'relative', width: '100%', maxWidth: '300px', height: '55px'}}>
       <label style={{
         position: 'absolute',
@@ -350,7 +355,6 @@ export default function App() {
           {dataSel ? dataSel.split('-').reverse().join('/') : "📅 APRI CALENDARIO"}
         </span>
         
-        {/* L'input è qui ma è totalmente invisibile, serve solo ad attivare il click */}
         <input 
           type="date" 
           min={todayStr} 
@@ -361,7 +365,7 @@ export default function App() {
             left: 0,
             width: '100%',
             height: '100%',
-            opacity: 0, // Lo rende invisibile al 100%
+            opacity: 0, 
             cursor: 'pointer',
             zIndex: 2,
             appearance: 'none',
@@ -395,8 +399,6 @@ export default function App() {
     {oraSel && <button onClick={() => navigate('/dati-cliente')} style={{...styles.mainButton, marginTop:'40px', width:'100%'}}>CONTINUA</button>}
   </div>
 } />
-
-
 
           <Route path="/lista-attesa" element={
             <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
