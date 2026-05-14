@@ -245,6 +245,37 @@ export default function App() {
                 <a href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" target="_blank" rel="noopener noreferrer" style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}>CONTATTA SU WHATSAPP 💬</a>
               </div>
             </div>
+            {/* SEZIONE SOCIAL FOOTER */}
+<div style={{
+  display: 'flex', 
+  justifyContent: 'center', 
+  gap: '25px', 
+  marginTop: '25px', 
+  paddingBottom: '10px'
+}}>
+  {/* INSTAGRAM */}
+  <a href="https://www.instagram.com/donblendzbarbershop?igsh=N3oxaTRnY3Z4bGk1" target="_blank" rel="noopener noreferrer" style={{ transition: 'transform 0.2s' }}>
+    <img 
+      src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" 
+      alt="Instagram" 
+      style={{ width: '28px', height: '28px', filter: 'grayscale(1) brightness(1.5)' }} 
+      onMouseOver={(e) => e.target.style.filter = 'none'}
+      onMouseOut={(e) => e.target.style.filter = 'grayscale(1) brightness(1.5)'}
+    />
+  </a>
+
+  {/* TIKTOK */}
+  <a href="tiktok.com/@donblendzbarbershop?_r=1&_t=ZN-93BcAvmppAM" target="_blank" rel="noopener noreferrer" style={{ transition: 'transform 0.2s' }}>
+    <img 
+      src="https://upload.wikimedia.org/wikipedia/commons/a/a2/TikTok_logo.png" 
+      alt="TikTok" 
+      style={{ width: '28px', height: '28px', filter: 'grayscale(1) brightness(1.5)' }}
+      onMouseOver={(e) => e.target.style.filter = 'none'}
+      onMouseOut={(e) => e.target.style.filter = 'grayscale(1) brightness(1.5)'}
+    />
+  </a>
+</div>
+
           } />
 
           <Route path="/staff-access" element={<StaffDashboard onBack={() => navigate('/')} />} />
