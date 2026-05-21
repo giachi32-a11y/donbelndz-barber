@@ -83,36 +83,15 @@ export default function App() {
   };
 
   const checkOccupati = async (data) => {
-  setLoading(true);
-  const tempoInizio = Date.now(); // 1. Registriamo quando parte la chiamata
-
-  try {
-    const serv = localStorage.getItem('serv') || "";
-    const resp = await fetch(`${SCRIPT_URL}?date=${data}&service=${encodeURIComponent(serv)}`);
-    const dataOccupati = await resp.json();
-    
-    // 2. Calcoliamo quanto tempo è passato
-    const tempoPassato = Date.now() - tempoInizio;
-    const attesaMinima = 2000; // 2 secondi in millisecondi
-    const tempoRimanente = Math.max(0, attesaMinima - tempoPassato);
-
-    // 3. Aspettiamo il tempo rimanente prima di mostrare gli slot e spegnere il caricamento
-    setTimeout(() => {
+    setLoading(true);
+    try {
+      const serv = localStorage.getItem('serv') || "";
+      const resp = await fetch(`${SCRIPT_URL}?date=${data}&service=${encodeURIComponent(serv)}`);
+      const dataOccupati = await resp.json();
       setOccupati(Array.isArray(dataOccupati) ? dataOccupati : []);
-      setLoading(false);
-    }, tempoRimanente);
-
-  } catch (e) { 
-    // In caso di errore, gestiamo comunque il timer minimo per non far scattare l'app
-    const tempoPassato = Date.now() - tempoInizio;
-    const tempoRimanente = Math.max(0, 2000 - tempoPassato);
-    
-    setTimeout(() => {
-      setOccupati([]); 
-      setLoading(false);
-    }, tempoRimanente);
-  }
-};
+    } catch (e) { setOccupati([]); }
+    setLoading(false);
+  };
 
   const handleDateChange = (val) => {
     if (!val) return;
@@ -392,26 +371,7 @@ export default function App() {
       </label>
     </div>
 
-    {loading && (
-  <div style={{ textAlign: 'center', marginTop: '15px' }}>
-    <p style={{ color: THEME.gold, margin: 0 }}>Controllo agenda...</p>
-    
-    {/* Barra */}
-    <div style={{
-      width: '120px',
-      height: '4px',
-      backgroundColor: '#1a1a1a',
-      borderRadius: '10px',
-      margin: '10px auto 0 auto',
-      position: 'relative',
-      overflow: 'hidden',
-      border: '1px solid #333'
-    }}>
-      {/* Il palo da barbiere animato senza CSS */}
-      <BarberPole />
-    </div>
-  </div>
-)}
+    {loading && <p style={{color: THEME.gold, marginTop: '15px'}}>Controllo agenda...</p>}
     
     {isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Non puoi prenotare nel passato.</div>}
     {dataSel && chiuso && !isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Siamo chiusi. Scegli un altro giorno.</div>}
@@ -480,27 +440,4 @@ export default function App() {
       </div>
     </>
   );
-  
-  // Incolla questo fuori dal tuo componente principale
-const BarberPole = () => {
-  const [position, setPosition] = React.useState(-20);
-
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setPosition((prev) => (prev >= 120 ? -20 : prev + 2));
-    }, 20); // Velocità del movimento
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <span style={{
-      position: 'absolute',
-      top: '-8px',
-      fontSize: '12px',
-      left: `${position}px`
-    }}>
-      💈
-    </span>
-  );
-};
 }
