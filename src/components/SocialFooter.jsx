@@ -40,8 +40,8 @@ const styles = {
     textDecoration: 'none',
   },
   socialIcon: {
-    width: '32px',
-    height: '32px',
+    width: '29px',
+    height: '29px',
     objectFit: 'contain',
     cursor: 'pointer',
   },
