@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import StaffDashboard from './StaffDashboard'; 
+import SocialFooter from './components/SocialFooter';
 
 const THEME = {
   gold: '#D4AF37',
@@ -244,6 +245,7 @@ export default function App() {
                 <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Scrivici su whatsapp!</p>
                 <a href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" target="_blank" rel="noopener noreferrer" style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}>CONTATTA SU WHATSAPP 💬</a>
               </div>
+              <SocialFooter />
             </div>
           } />
 
