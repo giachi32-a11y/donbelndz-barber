@@ -245,7 +245,10 @@ export default function App() {
                 <p style={{fontSize: '0.9rem', color: '#ccc', marginBottom: '10px'}}>Scrivici su whatsapp!</p>
                 <a href="https://wa.me/393447875378?text=Ciao%20Danilo%2C%20vorrei%20un'informazione%3A" target="_blank" rel="noopener noreferrer" style={{...styles.contactBtn, marginTop: '15px', textAlign: 'center', width: '100%', boxSizing: 'border-box'}}>CONTATTA SU WHATSAPP 💬</a>
               </div>
-              <SocialFooter />
+              
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'center', clear: 'both' }}>
+      <SocialFooter />
+    </div>
             </div>
           } />
 
