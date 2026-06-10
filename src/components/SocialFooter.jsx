@@ -2,7 +2,7 @@ import React from 'react';
 
 const SocialFooter = () => {
   const instagramUrl = "https://www.instagram.com/donblendzbarbershop?igsh=N3oxaTRnY3Z4bGk1"; 
-  const tiktokUrl = "tiktok.com/@donblendzbarbershop?_r=1&_t=ZN-93BcAvmppAM";       
+  const tiktokUrl = "https://www.tiktok.com/@donblendzbarbershop?_r=1&_t=ZN-976DizBJOeE";       
 
   return (
     <div style={styles.footerContainer}>
