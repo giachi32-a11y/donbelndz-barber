@@ -19,20 +19,21 @@ const styles = {
   loadingText: { color: '#fff', fontSize: '0.7rem', letterSpacing: '5px', marginTop: '10px', opacity: 0.5, animation: 'pulse 2s infinite' },
   container: { minHeight: '100vh', backgroundColor: THEME.bg, color: '#fff', fontFamily: '-apple-system, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', overflowX: 'hidden', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)', paddingLeft: '20px', paddingRight: '20px', width: '100%' },
   homeContent: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%', paddingBottom: '40px', position: 'relative' },
-  header: { textAlign: 'center', marginBottom: '30px' },
+  header: { textAlign: 'center', marginBottom: '15px' }, // 🌟 Ridotto da 30px a 15px
   brandTitle: { fontSize: '3.5rem', fontWeight: '800', margin: '0', letterSpacing: '-2px', color: THEME.gold },
   subtitle: { color: '#ffffff', textTransform: 'uppercase', fontSize: '0.8rem', letterSpacing: '4px', fontWeight: '600', marginTop: '5px', opacity: 0.7 },
   installButton: { background: 'transparent', color: THEME.gold, border: `1px solid ${THEME.gold}`, padding: '10px 24px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '700', marginBottom: '15px', cursor: 'pointer' },
   mainButton: { background: THEME.goldGradient, color: '#000', border: 'none', padding: '16px 40px', borderRadius: '14px', fontSize: '1rem', fontWeight: '700', width: '100%', maxWidth: '280px', cursor: 'pointer', textAlign: 'center', boxShadow: '0 8px 16px rgba(212, 175, 55, 0.15)' },
   secButton: { background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '12px 30px', borderRadius: '14px', fontSize: '0.9rem', fontWeight: '600', width: '100%', maxWidth: '280px', cursor: 'pointer', marginTop: '15px' },
-  infoCard: { padding: '22px', background: THEME.glass, borderRadius: THEME.radius, width: '100%', maxWidth: '350px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '20px', textAlign: 'left', boxSizing: 'border-box' },
+  infoCard: { padding: '12px 22px', background: THEME.glass, borderRadius: THEME.radius, width: '100%', maxWidth: '350px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '10px', textAlign: 'left', boxSizing: 'border-box' }, // 🌟 Ottimizzati padding e marginTop
   contactBtn: { background: THEME.goldGradient, color: '#000', border: 'none', padding: '10px 15px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: '700', marginTop: '12px', cursor: 'pointer', display: 'inline-block', textDecoration: 'none' },
   serviceCard: { padding: '14px 18px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '380px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxSizing: 'border-box' },
   dateInput: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1.1rem', width: '100%', maxWidth: '300px', textAlign: 'center', outline: 'none', marginTop: '20px' },
   inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' },
   apptCard: { padding: '15px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '300px', border: '1px solid rgba(255,255,255,0.05)', margin: '0 auto 10px auto', textAlign: 'left', boxSizing: 'border-box' },
-  staffBtn: { position: 'absolute', top: '0px', right: '0px', background: 'transparent', color: THEME.gold, border: 'none', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', opacity: 0.5, cursor: 'pointer', padding: '10px' }
+  staffBtn: { position: 'absolute', top: '5px', right: '5px', background: 'transparent', color: THEME.gold, border: 'none', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', opacity: 0.5, cursor: 'pointer', padding: '10px' } // 🌟 Spostato leggermente a top: 5px, right: 5px
 };
+
 
 export default function App() {
   const navigate = useNavigate();
