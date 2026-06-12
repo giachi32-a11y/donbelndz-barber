@@ -88,7 +88,8 @@ export default function App() {
     setLoading(true);
     try {
       const serv = localStorage.getItem('serv') || "";
-      const resp = await fetch(`${SCRIPT_URL}?date=${data}&service=${encodeURIComponent(serv)}`);
+      const timestamp = new Date().getTime();
+      const resp = await fetch(`${SCRIPT_URL}?date=${data}&service=${encodeURIComponent(serv)}&_nocache=${timestamp}`);
       const dataOccupati = await resp.json();
       setOccupati(Array.isArray(dataOccupati) ? dataOccupati : []);
     } catch (e) { setOccupati([]); }
