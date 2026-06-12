@@ -84,46 +84,22 @@ export default function App() {
     else alert("Clicca i tre puntini in alto a destra e seleziona 'Installa applicazione'.");
   };
 
-  const checkOccupati = async (data) => {
+    const checkOccupati = async (data) => {
+    setOccupati([]);
     setLoading(true);
     try {
       const serv = localStorage.getItem('serv') || "";
       const timestamp = new Date().getTime();
-      const resp = await fetch(`${SCRIPT_URL}?date=${data}&service=${encodeURIComponent(serv)}&_nocache=${timestamp}`);
+      const url = `${SCRIPT_URL}?date=${encodeURIComponent(data)}&service=${encodeURIComponent(serv)}&_nocache=${timestamp}`;
+      const resp = await fetch(url);
       const dataOccupati = await resp.json();
       setOccupati(Array.isArray(dataOccupati) ? dataOccupati : []);
-    } catch (e) { setOccupati([]); }
+    } catch (e) {
+      setOccupati([]);
+    }
     setLoading(false);
   };
-
-  const checkOccupati = async (data) => {
-    // 1. Svuotiamo immediatamente i vecchi dati per evitare che rimangano appesi a schermo
-    setOccupati([]); 
-    setLoading(true);
-    
-    try {
-      const serv = localStorage.getItem('serv') || "";
-      const timestamp = new Date().getTime();
-      
-      // 2. Forza la richiesta pulita bypassando ogni possibile blocco lato server
-      const resp = await fetch(
-        `${SCRIPT_URL}?date=${encodeURIComponent(data)}&service=${encodeURIComponent(serv)}&_nocache=${timestamp}`,
-        { method: 'GET', mode: 'cors' }
-      );
-      
-      if (!resp.ok) throw new Error();
-      
-      const dataOccupati = await resp.json();
-      
-      // 3. Applichiamo i dati ricevuti assicurandoci che il formato sia un array pulito
-      setOccupati(Array.isArray(dataOccupati) ? dataOccupati : []);
-    } catch (e) { 
-      setOccupati([]); 
-    } finally {
-      setLoading(false);
-    }
-};
-
+  
   const inviaPrenotazione = async () => {
     if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
     if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
