@@ -96,19 +96,28 @@ export default function App() {
     setLoading(false);
   };
 
-  const handleDateChange = (val) => {
-    if (!val) return;
-    setDataSel(val);
-    setOraSel('');
-    const selectedDate = new Date(val + "T00:00:00");
-    const todayNoTime = new Date(todayStr + "T00:00:00");
-    if (selectedDate < todayNoTime) { setIsPast(true); return; }
-    setIsPast(false);
-    const d = selectedDate.getDay();
-    const isChiuso = d === 0 || d === 1 || isFestivo(val);
-    setChiuso(isChiuso);
-    if (!isChiuso) checkOccupati(val);
-  };
+  const checkOccupati = async (data) => {
+    setOccupati([]); 
+    setLoading(true);
+    
+    try {
+      const serv = localStorage.getItem('serv') || "";
+      const timestamp = new Date().getTime();
+      const resp = await fetch(
+        `${SCRIPT_URL}?date=${encodeURIComponent(data)}&service=${encodeURIComponent(serv)}&_nocache=${timestamp}`,
+        { method: 'GET', mode: 'cors' }
+      );
+      
+      if (!resp.ok) throw new Error();
+      const dataOccupati = await resp.json();
+      setOccupati(Array.isArray(dataOccupati) ? dataOccupati : []);
+    } catch (e) { 
+      setOccupati([]); 
+    } finally {
+      setLoading(false);
+    }
+};
+
 
   const inviaPrenotazione = async () => {
     if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
