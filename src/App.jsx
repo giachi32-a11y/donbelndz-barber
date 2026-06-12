@@ -84,22 +84,31 @@ export default function App() {
     else alert("Clicca i tre puntini in alto a destra e seleziona 'Installa applicazione'.");
   };
 
-    const checkOccupati = async (data) => {
-    setOccupati([]);
+  const checkOccupati = async (data) => {
     setLoading(true);
     try {
       const serv = localStorage.getItem('serv') || "";
-      const timestamp = new Date().getTime();
-      const url = `${SCRIPT_URL}?date=${encodeURIComponent(data)}&service=${encodeURIComponent(serv)}&_nocache=${timestamp}`;
-      const resp = await fetch(url);
+      const resp = await fetch(`${SCRIPT_URL}?date=${data}&service=${encodeURIComponent(serv)}`);
       const dataOccupati = await resp.json();
       setOccupati(Array.isArray(dataOccupati) ? dataOccupati : []);
-    } catch (e) {
-      setOccupati([]);
-    }
+    } catch (e) { setOccupati([]); }
     setLoading(false);
   };
-  
+
+  const handleDateChange = (val) => {
+    if (!val) return;
+    setDataSel(val);
+    setOraSel('');
+    const selectedDate = new Date(val + "T00:00:00");
+    const todayNoTime = new Date(todayStr + "T00:00:00");
+    if (selectedDate < todayNoTime) { setIsPast(true); return; }
+    setIsPast(false);
+    const d = selectedDate.getDay();
+    const isChiuso = d === 0 || d === 1 || isFestivo(val);
+    setChiuso(isChiuso);
+    if (!isChiuso) checkOccupati(val);
+  };
+
   const inviaPrenotazione = async () => {
     if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
     if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
