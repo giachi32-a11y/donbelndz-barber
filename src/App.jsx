@@ -116,13 +116,31 @@ export default function App() {
     const cleanTel = telefono.replace(/\s+/g, ''); 
     setLoading(true);
     try {
-      await fetch(SCRIPT_URL, { 
+      // Effettuiamo la chiamata fetch (rimosso 'no-cors' per poter leggere la risposta di Google Script)
+      const response = await fetch(SCRIPT_URL, { 
         method: 'POST', 
-        mode: 'no-cors', 
         body: JSON.stringify({ nome, email, telefono: cleanTel, servizio: localStorage.getItem('serv'), data: dataSel, ora: oraSel }) 
       });
-      navigate('/conferma-finale');
-    } catch (e) { alert("Errore nell'invio. Riprova."); } finally { setLoading(false); }
+      
+      // Leggiamo la risposta testuale del server
+      const risultato = await response.text();
+      
+      // Controlliamo l'esito dello script
+      if (risultato === "Success") {
+        navigate('/conferma-finale');
+      } else if (risultato === "SLOT_TAKEN") {
+        alert("Ops! Questo orario è stato appena prenotato da un altro cliente un istante prima di te. Per favore, scegli un altro orario o un altro giorno.");
+      } else if (risultato === "SERVER_BUSY") {
+        alert("Il sistema è momentaneamente occupato a gestire altre richieste simultanee. Riprova tra pochissimi secondi!");
+      } else {
+        alert("Si è verificato un problema: " + risultato);
+      }
+      
+    } catch (e) { 
+      alert("Errore nell'invio. Riprova."); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   // --- CORREZIONE FUNZIONE LISTA ATTESA ---
