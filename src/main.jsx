@@ -20,6 +20,12 @@ const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
 async function richiediPermessoNotifiche() {
+  // Se il permesso globale del browser è ancora "default" (nessuna scelta fatta o resettato da iOS),
+  // ripuliamo il localStorage per assicurarci di poter mostrare il pop-up nella PWA installata.
+  if ('Notification' in window && Notification.permission === 'default') {
+    localStorage.removeItem('notifiche_richieste');
+  }
+
   // 1. Controlla se abbiamo già chiesto il permesso in passato
   const giaChiesto = localStorage.getItem('notifiche_richieste');
   
