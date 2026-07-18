@@ -56,6 +56,11 @@ export async function richiediPermessoNotifiche() {
 
 // Rendiamo la funzione disponibile anche globalmente su window per semplicità
 window.richiediPermessoNotifiche = richiediPermessoNotifiche;
+
+// === RECUPERO AUTOMATICO TOKEN ALL'AVVIO SE GIÀ ACCORDATO ===
+if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+  richiediPermessoNotifiche().catch(err => console.log("Errore auto-token:", err));
+}
 // -------------------------------------------------
 
 ReactDOM.createRoot(document.getElementById('root')).render(
