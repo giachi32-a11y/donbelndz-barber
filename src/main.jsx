@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
@@ -19,36 +19,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
-async function richiediPermessoNotifiche() {
-  // Se il permesso globale del browser è ancora "default" (nessuna scelta fatta o resettato da iOS),
-  // ripuliamo il localStorage per assicurarci di poter mostrare il pop-up nella PWA installata.
-  if ('Notification' in window && Notification.permission === 'default') {
-    localStorage.removeItem('notifiche_richieste');
-  }
-
-  // 1. Controlla se abbiamo già chiesto il permesso in passato
-  const giaChiesto = localStorage.getItem('notifiche_richieste');
-  
-  // Se è già stato chiesto una volta, blocca l'esecuzione per non disturbare l'utente
-  if (giaChiesto) {
-    console.log('Permesso notifiche già richiesto in una sessione precedente.');
+// Esportiamo la funzione così da poterla usare al clic di un pulsante nei tuoi componenti
+export async function richiediPermessoNotifiche() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    console.log('Notifiche non supportate su questo dispositivo.');
     return;
   }
 
   try {
-    // 2. Mostra il pop-up nativo del browser
+    // Su iOS questo pop-up apparirà SOLO se la funzione viene eseguita dentro un evento di Click
     const permission = await Notification.requestPermission();
     
-    // Salva subito nel localStorage che il tentativo è stato fatto (così non lo chiederà mai più)
-    localStorage.setItem('notifiche_richieste', 'true');
-
     if (permission === 'granted') {
       console.log('Permesso notifiche accordato!');
       
-      // Registra il Service Worker
       const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       
-      // Ottiene il token del dispositivo
       const tokenAttuale = await getToken(messaging, { 
         vapidKey: 'BA1OR66k5omw1Fr9yNaGVNfvnAv1m5MZ5V61dbfUTEN-JzgM8CDb0v8TgGgI4bNZ1Tfxq-tkNdteCRkK4lHjzlA',
         serviceWorkerRegistration: registration 
@@ -56,7 +42,6 @@ async function richiediPermessoNotifiche() {
       
       if (tokenAttuale) {
         console.log('Ecco il Token del cliente:', tokenAttuale);
-        // Salva il token nel browser per usarlo al momento della prenotazione
         localStorage.setItem('fcm_token', tokenAttuale);
       } else {
         console.log('Nessun token disponibile. Controlla la chiave VAPID.');
@@ -69,27 +54,14 @@ async function richiediPermessoNotifiche() {
   }
 }
 
-// Componente Wrapper per gestire il delay dello Splash Screen all'avvio
-const AppConNotifiche = () => {
-  useEffect(() => {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      // Attende 2.5 secondi (il tempo dello splash screen) prima di attivare il pop-up
-      const timer = setTimeout(() => {
-        richiediPermessoNotifiche();
-      }, 2500);
-
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  return <App />;
-};
+// Rendiamo la funzione disponibile anche globalmente su window per semplicità
+window.richiediPermessoNotifiche = richiediPermessoNotifiche;
 // -------------------------------------------------
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AppConNotifiche />
+      <App />
     </BrowserRouter>
   </React.StrictMode>,
 )
