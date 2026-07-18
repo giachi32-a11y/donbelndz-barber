@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
@@ -20,8 +20,22 @@ const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
 async function richiediPermessoNotifiche() {
+  // 1. Controlla se abbiamo già chiesto il permesso in passato
+  const giaChiesto = localStorage.getItem('notifiche_richieste');
+  
+  // Se è già stato chiesto una volta, blocca l'esecuzione per non disturbare l'utente
+  if (giaChiesto) {
+    console.log('Permesso notifiche già richiesto in una sessione precedente.');
+    return;
+  }
+
   try {
+    // 2. Mostra il pop-up nativo del browser
     const permission = await Notification.requestPermission();
+    
+    // Salva subito nel localStorage che il tentativo è stato fatto (così non lo chiederà mai più)
+    localStorage.setItem('notifiche_richieste', 'true');
+
     if (permission === 'granted') {
       console.log('Permesso notifiche accordato!');
       
@@ -49,16 +63,27 @@ async function richiediPermessoNotifiche() {
   }
 }
 
-// Avvia il controllo all'apertura dell'app
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-  richiediPermessoNotifiche();
-}
+// Componente Wrapper per gestire il delay dello Splash Screen all'avvio
+const AppConNotifiche = () => {
+  useEffect(() => {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      // Attende 2.5 secondi (il tempo dello splash screen) prima di attivare il pop-up
+      const timer = setTimeout(() => {
+        richiediPermessoNotifiche();
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  return <App />;
+};
 // -------------------------------------------------
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <AppConNotifiche />
     </BrowserRouter>
   </React.StrictMode>,
 )
