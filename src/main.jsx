@@ -36,7 +36,8 @@ async function richiediPermessoNotifiche() {
       
       if (tokenAttuale) {
         console.log('Ecco il Token del cliente:', tokenAttuale);
-        // Più avanti invieremo questo token a Google Sheets insieme alla mail
+        // Salva il token nel browser per usarlo al momento della prenotazione
+        localStorage.setItem('fcm_token', tokenAttuale);
       } else {
         console.log('Nessun token disponibile. Controlla la chiave VAPID.');
       }
