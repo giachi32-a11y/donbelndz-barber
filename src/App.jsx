@@ -468,10 +468,10 @@ export default function App() {
               
               {/* Tasto Recensione Google */}
               <button 
-                onClick={() => window.open('INSERISCI_QUI_IL_TUO_LINK_GOOGLE', '_blank')} 
+                onClick={() => window.open('https://g.page/r/Cd-4yltycJOLEBM/review', '_blank')} 
                 style={{...styles.mainButton, marginTop:'40px', backgroundColor: '#ffffff', color: '#000000'}}
               >
-                ⭐ LASCIALA UNA RECENSIONE
+                LASCIALA UNA RECENSIONE!
               </button>
 
               {/* Tasto Torna alla Home */}
