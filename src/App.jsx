@@ -471,7 +471,7 @@ export default function App() {
                 onClick={() => window.open('https://g.page/r/Cd-4yltycJOLEBM/review', '_blank')} 
                 style={{...styles.mainButton, marginTop:'40px', backgroundColor: '#ffffff', color: '#000000'}}
               >
-                LASCIALA UNA RECENSIONE!
+                LASCIA UNA RECENSIONE 🫶🏻
               </button>
 
               {/* Tasto Torna alla Home */}
