@@ -109,29 +109,24 @@ export default function App() {
     if (!isChiuso) checkOccupati(val);
   };
 
-    const inviaPrenotazione = async () => {
+     const inviaPrenotazione = async () => {
     if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
     if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
     if (loading) return; 
     const cleanTel = telefono.replace(/\s+/g, ''); 
     setLoading(true);
 
-    // 1. Recupera il token delle notifiche salvato nel browser
-    const tokenNotifiche = localStorage.getItem('fcm_token') || '';
-
     try {
-      // Effettuiamo la chiamata fetch
+      // Chiamata POST originale al tuo script Google
       const response = await fetch(SCRIPT_URL, { 
         method: 'POST', 
-        // 2. Aggiunto "token" all'oggetto inviato a Google Apps Script
         body: JSON.stringify({ 
           nome, 
           email, 
           telefono: cleanTel, 
           servizio: localStorage.getItem('serv'), 
           data: dataSel, 
-          ora: oraSel,
-          token: tokenNotifiche 
+          ora: oraSel
         }) 
       });
       
