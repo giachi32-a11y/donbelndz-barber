@@ -253,27 +253,14 @@ export default function App() {
         </div>
       )}
 
-      <div style={{...styles.container, opacity: showSplash ? 0 : 1, transition: 'opacity 1s ease'}}>
+ <div style={{...styles.container, opacity: showSplash ? 0 : 1, transition: 'opacity 1s ease'}}>
         <Routes>
           <Route path="/" element={
             <div style={styles.homeContent}>
               <button onClick={() => navigate('/staff-access')} style={styles.staffBtn}>AREA STAFF</button>
               <div style={styles.header}><h1 style={styles.brandTitle}>DonBlendz</h1><p style={styles.subtitle}>BarberShop - APP</p></div>
               {showInstall && <button onClick={handleInstallClick} style={styles.installButton}>📲 INSTALLA APP SU HOME</button>}
-              
-              {/* Pulsante PRENOTA ORA modificato per sbloccare il pop-up su iOS */}
-              <button 
-                onClick={() => {
-                  if (window.richiediPermessoNotifiche) {
-                    window.richiediPermessoNotifiche();
-                  }
-                  navigate('/servizi');
-                }} 
-                style={styles.mainButton}
-              >
-                PRENOTA ORA
-              </button>
-              
+              <button onClick={() => navigate('/servizi')} style={styles.mainButton}>PRENOTA ORA</button>
               <button onClick={() => navigate('/miei-appuntamenti')} style={styles.secButton}>I MIEI APPUNTAMENTI</button>
               <div style={styles.infoCard}>
                 <h3 style={{color: THEME.gold, fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '10px'}}>ORARI NEGOZIO ⌚️</h3>
