@@ -465,7 +465,22 @@ export default function App() {
               <h2 style={{color: THEME.gold, fontSize:'2rem'}}>CONFERMATO!</h2>
               <p>Ciao {nome}, ci vediamo il {dataSel} alle {oraSel}!</p>
               <p style={{fontSize:'0.8rem', opacity:0.6, marginTop:'10px'}}>Riceverai un'email di conferma all'indirizzo {email}</p>
-              <button onClick={() => { setNome(''); setOraSel(''); setEmail(''); navigate('/'); }} style={{...styles.mainButton, marginTop:'40px'}}>TORNA ALLA HOME</button>
+              
+              {/* Tasto Recensione Google */}
+              <button 
+                onClick={() => window.open('INSERISCI_QUI_IL_TUO_LINK_GOOGLE', '_blank')} 
+                style={{...styles.mainButton, marginTop:'40px', backgroundColor: '#ffffff', color: '#000000'}}
+              >
+                ⭐ LASCIALA UNA RECENSIONE
+              </button>
+
+              {/* Tasto Torna alla Home */}
+              <button 
+                onClick={() => { setNome(''); setOraSel(''); setEmail(''); navigate('/'); }} 
+                style={{...styles.mainButton, marginTop:'15px'}}
+              >
+                TORNA ALLA HOME
+              </button>
             </div>
           } />
         </Routes>
