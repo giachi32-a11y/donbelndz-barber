@@ -11,7 +11,7 @@ const THEME = {
   radius: '16px'
 };
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgsIixl7gxz0FP9PL7F-DikashvYM2rVDuHjZpEGxCoNhFxXRetzkCYxTXujVqXydY6w/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpwoOEorE2HBKAdvwfl4AAI7Rf3ndbIK3GREY_F36z0YigZytuLrBkDtdKxPzCJgxzMg/exec";
 
 const styles = {
   splash: { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', zIndex: 9999, transition: 'opacity 0.8s ease' },
