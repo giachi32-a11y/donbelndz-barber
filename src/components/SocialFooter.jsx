@@ -47,7 +47,7 @@ const SocialFooter = () => {
               <strong>1. Titolare del Trattamento dei Dati</strong><br />
               Il Titolare del trattamento è <b>DonBlendz BarberShop</b>, con sede in Via della Colombina N°2, Campi Bisenzio (FI). Per qualsiasi chiarimento in materia di protezione dati è possibile contattare la struttura ai seguenti recapiti:
             </p>
-            <qul style={styles.modalList}>
+            <ul style={styles.modalList}>
   <li><b>Email:</b> donblendzbarbershop@gmail.com</li>
   <li><b>Telefono / WhatsApp:</b> +39 344 7875378</li>
 </ul>
