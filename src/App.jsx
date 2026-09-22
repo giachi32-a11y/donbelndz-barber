@@ -25,15 +25,14 @@ const styles = {
   installButton: { background: 'transparent', color: THEME.gold, border: `1px solid ${THEME.gold}`, padding: '10px 24px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '700', marginBottom: '15px', cursor: 'pointer' },
   mainButton: { background: THEME.goldGradient, color: '#000', border: 'none', padding: '16px 40px', borderRadius: '14px', fontSize: '1rem', fontWeight: '700', width: '100%', maxWidth: '280px', cursor: 'pointer', textAlign: 'center', boxShadow: '0 8px 16px rgba(212, 175, 55, 0.15)' },
   secButton: { background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '12px 30px', borderRadius: '14px', fontSize: '0.9rem', fontWeight: '600', width: '100%', maxWidth: '280px', cursor: 'pointer', marginTop: '15px' },
-  infoCard: { padding: '12px 22px', background: THEME.glass, borderRadius: THEME.radius, width: '100%', maxWidth: '350px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '10px', textAlign: 'left', boxSizing: 'border-box' }, // 🌟 Ottimizzati padding e marginTop
+  infoCard: { padding: '12px 22px', background: THEME.glass, borderRadius: THEME.radius, width: '100%', maxWidth: '350px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '10px', textAlign: 'left', boxSizing: 'border-box' },
   contactBtn: { background: THEME.goldGradient, color: '#000', border: 'none', padding: '10px 15px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: '700', marginTop: '12px', cursor: 'pointer', display: 'inline-block', textDecoration: 'none' },
   serviceCard: { padding: '14px 18px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '380px', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxSizing: 'border-box' },
   dateInput: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1.1rem', width: '100%', maxWidth: '300px', textAlign: 'center', outline: 'none', marginTop: '20px' },
   inputField: { padding: '18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: THEME.glass, color: '#fff', fontSize: '1rem', width: '100%', maxWidth: '300px', marginTop: '15px', outline: 'none', boxSizing: 'border-box' },
   apptCard: { padding: '15px', background: THEME.glass, borderRadius: '12px', width: '100%', maxWidth: '300px', border: '1px solid rgba(255,255,255,0.05)', margin: '0 auto 10px auto', textAlign: 'left', boxSizing: 'border-box' },
-  staffBtn: { position: 'absolute', top: '5px', right: '5px', background: 'transparent', color: THEME.gold, border: 'none', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', opacity: 0.5, cursor: 'pointer', padding: '10px' } // 🌟 Spostato leggermente a top: 5px, right: 5px
+  staffBtn: { position: 'absolute', top: '5px', right: '5px', background: 'transparent', color: THEME.gold, border: 'none', fontSize: '0.7rem', fontWeight: 'bold', letterSpacing: '1px', opacity: 0.5, cursor: 'pointer', padding: '10px' }
 };
-
 
 export default function App() {
   const navigate = useNavigate();
@@ -109,7 +108,7 @@ export default function App() {
     if (!isChiuso) checkOccupati(val);
   };
 
-     const inviaPrenotazione = async () => {
+  const inviaPrenotazione = async () => {
     if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
     if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
     if (loading) return; 
@@ -117,7 +116,6 @@ export default function App() {
     setLoading(true);
 
     try {
-      // Chiamata POST originale al tuo script Google
       const response = await fetch(SCRIPT_URL, { 
         method: 'POST', 
         body: JSON.stringify({ 
@@ -130,10 +128,8 @@ export default function App() {
         }) 
       });
       
-      // Leggiamo la risposta testuale del server
       const risultato = await response.text();
       
-      // Controlliamo l'esito dello script
       if (risultato === "Success") {
         navigate('/conferma-finale');
       } else if (risultato === "SLOT_TAKEN") {
@@ -151,7 +147,6 @@ export default function App() {
     }
   };
 
-  // --- CORREZIONE FUNZIONE LISTA ATTESA ---
   const inviaListaAttesa = async () => {
     if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
     if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
@@ -221,11 +216,25 @@ export default function App() {
 
   const getTimes = () => {
     if (!dataSel || chiuso || isPast) return [];
-    if (dataSel.endsWith("-12-31")) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00"];
-    if (dataSel.endsWith("-05-01")) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00"];
-    const d = new Date(dataSel).getDay();
-    if (d === 6) return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
-    return ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
+    let baseSlots = [];
+    if (dataSel.endsWith("-12-31")) baseSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00"];
+    else if (dataSel.endsWith("-05-01")) baseSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00"];
+    else {
+      const d = new Date(dataSel).getDay();
+      if (d === 6) baseSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
+      else baseSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
+    }
+
+    const serv = (localStorage.getItem('serv') || "").toLowerCase();
+    if (serv.includes("bambino")) {
+      const extra40 = occupati.filter(t => t.endsWith(":40"));
+      extra40.forEach(t => {
+        if (!baseSlots.includes(t)) baseSlots.push(t);
+      });
+      baseSlots.sort();
+    }
+
+    return baseSlots;
   };
 
   const servizi = [{n: "Combo Taglio + Barba Deluxe", p: "25,00 €"}, {n: "Taglio uomo", p: "17,00 €"}, {n: "Taglio senior", p: "15,00 €"}, {n: "Taglio ragazzo", p: "15,00 €"}, {n: "Taglio bambino", p: "12,00 €"}, {n: "Combo Taglio + Barba", p: "20,00 €"}, {n: "Barba deluxe", p: "10,00 €"}];
@@ -248,7 +257,7 @@ export default function App() {
         </div>
       )}
 
- <div style={{...styles.container, opacity: showSplash ? 0 : 1, transition: 'opacity 1s ease'}}>
+      <div style={{...styles.container, opacity: showSplash ? 0 : 1, transition: 'opacity 1s ease'}}>
         <Routes>
           <Route path="/" element={
             <div style={styles.homeContent}>
@@ -274,8 +283,8 @@ export default function App() {
               </div>
               
               <div style={{ width: '100%', display: 'flex', justifyContent: 'center', clear: 'both' }}>
-      <SocialFooter />
-    </div>
+                <SocialFooter />
+              </div>
             </div>
           } />
 
@@ -312,123 +321,117 @@ export default function App() {
             </div>
           } />
 
-        <Route path="/servizi" element={
-  <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-    <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'5px', alignSelf: 'flex-start'}}>← Home</button>
-    
-    {/* BLOCCO: SERVIZI STYLING (Spazi ridotti) */}
-    <div style={{marginBottom: '15px', textAlign: 'center', width: '100%'}}>
-      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px'}}>SERVIZI DI STYLING</h2>
-      <p style={{fontSize: '0.8rem', color: '#888', marginBottom: '12px', fontStyle: 'italic'}}>Comprensivi di taglio</p>
-      {[
-        {n: "Decolorazione", p: "70,00 €"},
-        {n: "Mesh", p: "60,00 €"}
-      ].map(s => (
-        <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} 
-             style={{...styles.serviceCard, border: `1px solid ${THEME.gold}44`, background: 'rgba(212, 175, 55, 0.05)', margin: '0 auto 8px auto', padding: '12px 18px'}}>
-          <span style={{fontWeight: '700'}}>{s.n.toUpperCase()}</span>
-          <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
-        </div>
-      ))}
-    </div>
+          <Route path="/servizi" element={
+            <div style={{width: '100%', maxWidth: '400px', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+              <button onClick={() => navigate('/')} style={{background:'none', border:'none', color:THEME.gold, marginBottom:'5px', alignSelf: 'flex-start'}}>← Home</button>
+              
+              <div style={{marginBottom: '15px', textAlign: 'center', width: '100%'}}>
+                <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px'}}>SERVIZI DI STYLING</h2>
+                <p style={{fontSize: '0.8rem', color: '#888', marginBottom: '12px', fontStyle: 'italic'}}>Comprensivi di taglio</p>
+                {[
+                  {n: "Decolorazione", p: "70,00 €"},
+                  {n: "Mesh", p: "60,00 €"}
+                ].map(s => (
+                  <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} 
+                       style={{...styles.serviceCard, border: `1px solid ${THEME.gold}44`, background: 'rgba(212, 175, 55, 0.05)', margin: '0 auto 8px auto', padding: '12px 18px'}}>
+                    <span style={{fontWeight: '700'}}>{s.n.toUpperCase()}</span>
+                    <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
+                  </div>
+                ))}
+              </div>
 
-    {/* TITOLO SERVIZI CLASSICI (Spazio superiore minimizzato) */}
-    <div style={{textAlign: 'center', marginBottom: '12px', width: '100%'}}>
-      <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SERVIZI CLASSICI</h2>
-      <p style={{fontSize: '0.8rem', color: '#888', fontStyle: 'italic'}}>Taglio ragazzo: fino medie e/o superiori</p>
-    </div>
-    
-    <div style={{width: '100%'}}>
-      {servizi.map(s => (
-        <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} 
-             style={{...styles.serviceCard, margin: '0 auto 6px auto', padding: '12px 18px'}}>
-          <span style={{fontWeight: '600'}}>{s.n}</span>
-          <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
-        </div>
-      ))}
-    </div>
-  </div>
-} />
+              <div style={{textAlign: 'center', marginBottom: '12px', width: '100%'}}>
+                <h2 style={{fontWeight:'800', color: THEME.gold, marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SERVIZI CLASSICI</h2>
+                <p style={{fontSize: '0.8rem', color: '#888', fontStyle: 'italic'}}>Taglio ragazzo: fino medie e/o superiori</p>
+              </div>
+              
+              <div style={{width: '100%'}}>
+                {servizi.map(s => (
+                  <div key={s.n} onClick={() => { localStorage.setItem('serv', s.n); navigate('/prenota'); }} 
+                       style={{...styles.serviceCard, margin: '0 auto 6px auto', padding: '12px 18px'}}>
+                    <span style={{fontWeight: '600'}}>{s.n}</span>
+                    <span style={{color: THEME.gold, fontWeight: '800'}}>{s.p}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          } />
 
-         <Route path="/prenota" element={
-  <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px'}}>
-    <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
-    <h2 style={{fontWeight:'800', color: '#fff' , marginBottom: '20px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SCEGLI DATA E ORA</h2>
-    
-    {/* CONTENITORE PROFESSIONALE PER IL CALENDARIO */}
-    <div style={{position: 'relative', width: '100%', maxWidth: '300px', height: '55px'}}>
-      <label style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: THEME.goldGradient,
-        borderRadius: '12px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        boxShadow: '0 4px 15px rgba(212, 175, 55, 0.2)',
-        zIndex: 1
-      }}>
-        <span style={{
-          color: '#000',
-          fontWeight: '800',
-          fontSize: '0.9rem',
-          textTransform: 'uppercase',
-          letterSpacing: '1px'
-        }}>
-          {dataSel ? dataSel.split('-').reverse().join('/') : "📅 APRI CALENDARIO"}
-        </span>
-        
-        {/* L'input è qui ma è totalmente invisibile, serve solo ad attivare il click */}
-        <input 
-          type="date" 
-          min={todayStr} 
-          onChange={(e) => handleDateChange(e.target.value)} 
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            opacity: 0, // Lo rende invisibile al 100%
-            cursor: 'pointer',
-            zIndex: 2,
-            appearance: 'none',
-            WebkitAppearance: 'none'
-          }} 
-        />
-      </label>
-    </div>
+          <Route path="/prenota" element={
+            <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '20px'}}>
+              <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
+              <h2 style={{fontWeight:'800', color: '#fff' , marginBottom: '20px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SCEGLI DATA E ORA</h2>
+              
+              <div style={{position: 'relative', width: '100%', maxWidth: '300px', height: '55px'}}>
+                <label style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: THEME.goldGradient,
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 15px rgba(212, 175, 55, 0.2)',
+                  zIndex: 1
+                }}>
+                  <span style={{
+                    color: '#000',
+                    fontWeight: '800',
+                    fontSize: '0.9rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}>
+                    {dataSel ? dataSel.split('-').reverse().join('/') : "📅 APRI CALENDARIO"}
+                  </span>
+                  
+                  <input 
+                    type="date" 
+                    min={todayStr} 
+                    onChange={(e) => handleDateChange(e.target.value)} 
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      opacity: 0,
+                      cursor: 'pointer',
+                      zIndex: 2,
+                      appearance: 'none',
+                      WebkitAppearance: 'none'
+                    }} 
+                  />
+                </label>
+              </div>
 
-    {loading && <p style={{color: THEME.gold, marginTop: '15px'}}>Controllo agenda...</p>}
-    
-    {isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Non puoi prenotare nel passato.</div>}
-    {dataSel && chiuso && !isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Siamo chiusi. Scegli un altro giorno.</div>}
-    
-    {dataSel && !chiuso && !loading && !isPast && (
-      <>
-        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', width:'100%', marginTop:'30px'}}>
-          {getTimes().map(t => {
-            const isBusy = occupati.includes(t);
-            return ( <button key={t} disabled={isBusy} onClick={() => setOraSel(t)} style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button> );
-          })}
-        </div>
-        {tuttoPieno && (
-          <div style={{marginTop: '30px', padding: '20px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '14px', border: `1px solid ${THEME.gold}`, width: '100%', boxSizing: 'border-box'}}>
-            <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Posti esauriti!</p>
-            <button onClick={() => navigate('/lista-attesa')} style={{...styles.mainButton, fontSize: '0.85rem', padding: '12px 20px'}}> AVVISAMI SE SI LIBERA UN POSTO 🔔 </button>
-          </div>
-        )}
-      </>
-    )}
-    {oraSel && <button onClick={() => navigate('/dati-cliente')} style={{...styles.mainButton, marginTop:'40px', width:'100%'}}>CONTINUA</button>}
-  </div>
-} />
-
-
+              {loading && <p style={{color: THEME.gold, marginTop: '15px'}}>Controllo agenda...</p>}
+              
+              {isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Non puoi prenotare nel passato.</div>}
+              {dataSel && chiuso && !isPast && <div style={{color:'#FF453A', marginTop:'20px', fontWeight:'700'}}>Siamo chiusi. Scegli un altro giorno.</div>}
+              
+              {dataSel && !chiuso && !loading && !isPast && (
+                <>
+                  <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'10px', width:'100%', marginTop:'30px'}}>
+                    {getTimes().map(t => {
+                      const isBusy = occupati.includes(t);
+                      return ( <button key={t} disabled={isBusy} onClick={() => setOraSel(t)} style={{padding:'14px 0', borderRadius:'12px', border: oraSel === t ? `1px solid ${THEME.gold}` : '1px solid #222', background: isBusy ? '#111' : (oraSel === t ? THEME.goldGradient : 'rgba(255,255,255,0.05)'), color: isBusy ? '#444' : (oraSel === t ? '#000' : '#fff'), fontWeight:'700', textDecoration: isBusy ? 'line-through' : 'none'}}>{isBusy ? "Pieno" : t}</button> );
+                    })}
+                  </div>
+                  {tuttoPieno && (
+                    <div style={{marginTop: '30px', padding: '20px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '14px', border: `1px solid ${THEME.gold}`, width: '100%', boxSizing: 'border-box'}}>
+                      <p style={{fontSize: '0.9rem', marginBottom: '10px'}}>Posti esauriti!</p>
+                      <button onClick={() => navigate('/lista-attesa')} style={{...styles.mainButton, fontSize: '0.85rem', padding: '12px 20px'}}> AVVISAMI SE SI LIBERA UN POSTO 🔔 </button>
+                    </div>
+                  )}
+                </>
+              )}
+              {oraSel && <button onClick={() => navigate('/dati-cliente')} style={{...styles.mainButton, marginTop:'40px', width:'100%'}}>CONTINUA</button>}
+            </div>
+          } />
 
           <Route path="/lista-attesa" element={
             <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
@@ -466,7 +469,6 @@ export default function App() {
               <p>Ciao {nome}, ci vediamo il {dataSel} alle {oraSel}!</p>
               <p style={{fontSize:'0.8rem', opacity:0.6, marginTop:'10px'}}>Riceverai un'email di conferma all'indirizzo {email}</p>
               
-              {/* Tasto Recensione Google */}
               <button 
                 onClick={() => window.open('https://g.page/r/Cd-4yltycJOLEBM/review', '_blank')} 
                 style={{...styles.mainButton, marginTop:'40px', backgroundColor: '#ffffff', color: '#000000'}}
@@ -474,7 +476,6 @@ export default function App() {
                 LASCIA UNA RECENSIONE 🫶🏻
               </button>
 
-              {/* Tasto Torna alla Home */}
               <button 
                 onClick={() => { setNome(''); setOraSel(''); setEmail(''); navigate('/'); }} 
                 style={{...styles.mainButton, marginTop:'15px'}}
