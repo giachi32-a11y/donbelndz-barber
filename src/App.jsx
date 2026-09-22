@@ -110,19 +110,11 @@ export default function App() {
   };
 
      const inviaPrenotazione = async () => {
-    if (!nome || !telefono) return alert("Per favore, inserisci nome e telefono.");
-    
-    // --- LOGICA FILTRO NUMERI ---
-    const cleanTel = telefono.replace(/\s+/g, ''); // Rimuove solo gli spazi
-    
-    // Controlla: Inizia con 3, solo numeri, esattamente 10 cifre totali
-    const isPhoneValid = /^[3][0-9]{9}$/.test(cleanTel);
-    // Blocca se sono 10 cifre tutte uguali (es: 3333333333)
-    const isRepeat = /^(\d)\1{9}$/.test(cleanTel); 
-
-    if (!isPhoneValid || isRepeat) {
-      return alert("Numero non valido. Inserisci 10 cifre senza prefisso internazionale (es: 3341234567).");
-    }
+    if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
+    if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
+    if (loading) return; 
+    const cleanTel = telefono.replace(/\s+/g, ''); 
+    setLoading(true);
     
     try {
       // Chiamata POST originale al tuo script Google
