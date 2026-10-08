@@ -44,6 +44,7 @@ export default function App() {
   const [oraSel, setOraSel] = useState('');
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [loading, setLoading] = useState(false);
   const [chiuso, setChiuso] = useState(false);
@@ -110,7 +111,8 @@ export default function App() {
   };
 
      const inviaPrenotazione = async () => {
-    if (!nome || !telefono || !email) return alert("Per favore, inserisci nome, email e telefono.");
+    if (!nome || !telefono || !email || !confirmEmail) return alert("Per favore, compila tutti i campi.");
+    if (email.trim().toLowerCase() !== confirmEmail.trim().toLowerCase()) return alert("Le email inserite non coincidono. Riprova.");
     if (!email.includes("@") || !email.includes(".")) return alert("Inserisci una email valida.");
     if (loading) return; 
     const cleanTel = telefono.replace(/\s+/g, ''); 
@@ -448,16 +450,17 @@ export default function App() {
             </div>
           } />
 
-          <Route path="/dati-cliente" element={
-            <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-              <button onClick={() => navigate('/prenota')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Indietro</button>
-              <h2 style={{fontWeight:'800', color: '#fff' , marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>I TUOI RECAPITI</h2>
-              <input type="text" placeholder="Nome e Cognome" value={nome} onChange={(e) => setNome(e.target.value)} style={styles.inputField} />
-              <input type="email" placeholder="La tua Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.inputField} />
-              <input type="tel" placeholder="Cellulare" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={styles.inputField} />
-              <button disabled={loading} onClick={inviaPrenotazione} style={{...styles.mainButton, marginTop:'40px', width:'100%', opacity: loading ? 0.5 : 1}}>{loading ? "INVIO..." : "CONFERMA PRENOTAZIONE"}</button>
-            </div>
-          } />
+       <Route path="/dati-cliente" element={
+  <div style={{width: '100%', maxWidth: '360px', textAlign: 'center', paddingTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+    <button onClick={() => navigate('/prenota')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Indietro</button>
+    <h2 style={{fontWeight:'800', color: '#fff' , marginBottom: '2px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>I TUOI RECAPITI</h2>
+    <input type="text" placeholder="Nome e Cognome" value={nome} onChange={(e) => setNome(e.target.value)} style={styles.inputField} />
+    <input type="email" placeholder="La tua Email" value={email} onChange={(e) => setEmail(e.target.value)} style={styles.inputField} />
+    <input type="email" placeholder="Conferma la tua Email" value={confirmEmail} onChange={(e) => setConfirmEmail(e.target.value)} style={styles.inputField} />
+    <input type="tel" placeholder="Cellulare" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={styles.inputField} />
+    <button disabled={loading} onClick={inviaPrenotazione} style={{...styles.mainButton, marginTop:'40px', width:'100%', opacity: loading ? 0.5 : 1}}>{loading ? "INVIO..." : "CONFERMA PRENOTAZIONE"}</button>
+  </div>
+} />
 
           <Route path="/conferma-finale" element={
             <div style={{textAlign:'center', paddingTop:'80px', display:'flex', flexDirection:'column', alignItems:'center'}}>
