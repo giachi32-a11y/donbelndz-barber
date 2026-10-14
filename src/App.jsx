@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+Import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import StaffDashboard from './StaffDashboard'; 
 import SocialFooter from './components/SocialFooter';
@@ -357,9 +357,11 @@ export default function App() {
     <button onClick={() => navigate('/servizi')} style={{background:'none', border:'none', color:THEME.gold, alignSelf: 'flex-start'}}>← Servizi</button>
     <h2 style={{fontWeight:'800', color: '#fff' , marginBottom: '20px', fontSize: '1.6rem', letterSpacing: '1px', textTransform: 'uppercase'}}>SCEGLI DATA E ORA</h2>
     
-    {/* CONTENITORE PROFESSIONALE PER IL CALENDARIO */}
+    {/* CONTENITORE OTTIMIZZATO PER ANDROID & iOS */}
     <div style={{position: 'relative', width: '100%', maxWidth: '300px', height: '55px'}}>
-      <label style={{
+      
+      {/* Testo dorato visibile sul pulsante */}
+      <div style={{
         position: 'absolute',
         top: 0,
         left: 0,
@@ -370,8 +372,8 @@ export default function App() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        cursor: 'pointer',
         boxShadow: '0 4px 15px rgba(212, 175, 55, 0.2)',
+        pointerEvents: 'none',
         zIndex: 1
       }}>
         <span style={{
@@ -383,26 +385,34 @@ export default function App() {
         }}>
           {dataSel ? dataSel.split('-').reverse().join('/') : "📅 APRI CALENDARIO"}
         </span>
-        
-        {/* L'input è qui ma è totalmente invisibile, serve solo ad attivare il click */}
-        <input 
-          type="date" 
-          min={todayStr} 
-          onChange={(e) => handleDateChange(e.target.value)} 
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            opacity: 0, // Lo rende invisibile al 100%
-            cursor: 'pointer',
-            zIndex: 2,
-            appearance: 'none',
-            WebkitAppearance: 'none'
-          }} 
-        />
-      </label>
+      </div>
+
+      {/* Input nativo sovrapposto e cliccabile direttamente su Android */}
+      <input 
+        type="date" 
+        min={todayStr} 
+        value={dataSel}
+        onChange={(e) => handleDateChange(e.target.value)} 
+        onClick={(e) => {
+          if (typeof e.target.showPicker === 'function') {
+            try { e.target.showPicker(); } catch (err) {}
+          }
+        }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          opacity: 0,
+          cursor: 'pointer',
+          zIndex: 2,
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+          appearance: 'none',
+          background: 'transparent'
+        }} 
+      />
     </div>
 
     {loading && <p style={{color: THEME.gold, marginTop: '15px'}}>Controllo agenda...</p>}
