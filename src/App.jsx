@@ -1,4 +1,4 @@
-Import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import StaffDashboard from './StaffDashboard'; 
 import SocialFooter from './components/SocialFooter';
