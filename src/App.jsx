@@ -246,7 +246,7 @@ export default function App() {
       {showSplash && (
         <div style={styles.splash}>
           <img src="https://raw.githubusercontent.com/giachi32-a11y/donbelndz-barber/main/logo512.png" alt="Logo" style={styles.splashImage} onError={(e) => { e.target.src = "logo512.png"; }} />
-          <div style={styles.loadingText}>V 2.7</div>
+          <div style={styles.loadingText}>V 2.9</div>
         </div>
       )}
 
